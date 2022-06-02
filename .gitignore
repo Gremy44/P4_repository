@@ -1,0 +1,11 @@
+/p4env
+.p4env
+
+/views/__pycache__
+/models/__pycache__
+/controllers/__pycache__
+.views/__pycache__
+.models/__pycache__
+.controllers/__pycache__
+
+/models/tournament_datas
