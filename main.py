@@ -1,14 +1,25 @@
+import os
 from models.mod_tournament import Tournament
-from views.tournaments import ask_informations_tournois
+from controllers.functions import ask_informations_tournament, ask_informations_player
+from views.players import Create_Players
 
-class Tournois:
-    def __init__(self):
-        pass
+#1. Créer un nouveau tournoi.
+#2. Ajouter huit joueurs.
+#3. L'ordinateur génère des paires de joueurs pour le premier tour.
+#4. Lorsque le tour est terminé, entrez les résultats.
+#5. Répétez les étapes 3 et 4 pour les tours suivants jusqu'à ce que tous les tours soient joués, et que le tournoi soit terminé.
 
-infos_tournois = ask_informations_tournois()
+#ti = ask_informations_tournament()
 
-tournoi_1 = Tournament(infos_tournois[0], infos_tournois[1], infos_tournois[2],
-                       infos_tournois[3], infos_tournois[4], infos_tournois[5],
-                       infos_tournois[6], infos_tournois[7])
+#tournois_1 = Tournament(ti[0], ti[1], ti[2], int(ti[3]), int(ti[4]), int(ti[5]), ti[6], ti[7])
+#tournois_1.reg_infos_tournament()
 
-tournoi_1.reg_infos_tournament()
+
+ij = ask_informations_player()
+player_1 = Create_Players(ij[0], ij[1], ij[2], ij[3], int(ij[4]))
+
+id1 = id(player_1)
+print(id1)
+
+player_1.reg_infos_players(id1)
+

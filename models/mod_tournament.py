@@ -1,5 +1,14 @@
+#for import script from other repertory
+from itertools import permutations
+import os, sys
+import random
+import numpy as np
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+
 from tinydb import TinyDB, Query
-import os
+
+from controllers.functions import create_directory
 
 
 class Tournament:
@@ -14,17 +23,17 @@ class Tournament:
         self.description = description
 
     def reg_infos_tournament(self):
-        try:
-            os.makedirs("../P4/models/tournament_datas")
-        except FileExistsError:
-            pass
+        
+        create_directory("../P4/models/tournament_datas")
 
         db = TinyDB(f'../P4/models/tournament_datas/{self.name}.json')
-        db.update(all(db))
+        #db.update(all(db))
         db.insert({"Nom" : self.name, "Lieu" : self.place, "Date" : self.date,
                    "Nombre de tours" : self.nb_round, "Rondes" : self.rondes,
                    "Nombre de joueurs" : self.player, "Temps" : self.time,
                    "Description" : self.description})
-        return print("izokay")
+        return print(self.name)
+
+    
 
 
