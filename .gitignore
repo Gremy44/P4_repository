@@ -11,4 +11,6 @@
 /models/tournament_datas
 /controllers/test.py
 /models/player_data_base
-/controllers/test_02.py
+.models/tournament_datas
+.controllers/test.py
+.models/player_data_base
