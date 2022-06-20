@@ -10,7 +10,9 @@
 
 /models/tournament_datas
 /controllers/test.py
+/controllers/test_02.py
 /models/player_data_base
 .models/tournament_datas
 .controllers/test.py
+.controllers/test_02.py
 .models/player_data_base

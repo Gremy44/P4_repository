@@ -1,36 +1,35 @@
 import tkinter
-from unittest.util import strclass
-import customtkinter  # <- import the CustomTkinter module
-from tinydb import TinyDB
+import customtkinter
 
-root_tk = tkinter.Tk()  # create the Tk window like you normally do
-root_tk.geometry("400x240")
-root_tk.title("Fenêtre test")
+customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 
-def champ(xrelx = .5, yrely = .5, placement = tkinter.CENTER):
-    entry = customtkinter.CTkEntry(master=root_tk,
-                                    width=120,
-                                    height=25,
-                                    corner_radius=10)
-    entry.place(relx=xrelx, rely=yrely, anchor=placement)
+app = customtkinter.CTk()
+app.geometry("400x580")
+app.title("Player profile creation.py")
 
-    t_tape = entry.get
-        
-    return t_tape
 
-def button_event():
-    print("button pressed")
-    print(entre_1)
+def button_callback():
+    mes_entrees = []
+    mes_entrees.append(entry_1.get())
+    print(mes_entrees)
+    
+    return entry_1.get
 
-button = customtkinter.CTkButton(master=root_tk,
-                                 text="Add",
-                                 command=button_event,
-                                 width=120,
-                                 height=32,
-                                 border_width=0,
-                                 corner_radius=8)
-button.place(relx=0.5, rely=0.8, anchor=tkinter.S)
 
-entre_1 = champ()
+frame_1 = customtkinter.CTkFrame(master=app)
+frame_1.pack(pady=20, padx=60, fill="both", expand=True)
 
-root_tk.mainloop()
+label_1 = customtkinter.CTkLabel(master=frame_1, justify=tkinter.LEFT)
+label_1.pack(pady=12, padx=10)
+
+entry_1 = customtkinter.CTkEntry(master=frame_1, placeholder_text="CTkEntry",justify=tkinter.LEFT)
+entry_1.pack(pady=12, padx=10)
+
+button_1 = customtkinter.CTkButton(master=frame_1,text="Valider", command=button_callback)
+button_1.pack(pady=12, padx=10)
+
+mes_entrees = []
+mes_entrees.append(entry_1.get())
+print(mes_entrees)
+
+app.mainloop()
