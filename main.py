@@ -6,11 +6,10 @@ from controllers.controller_add_player import AddPlayerController
 from models.model_add_player import AddPlayerModel
 
 
-
-"""#Nouveau joueur
+"""
+#Nouveau joueur
 jv = AddPlayerModel()
-jv.ask_player_infos()
-jv.add_player_data_control()
+jv.player_infos()
 jv.player_db_reg()
 """
 
@@ -21,7 +20,8 @@ tn.ask_tounament_infos()
 tn.input_tournament_db_reg()
 """
 
-"""ta = ModelAdvancedTournament()
+"""
+ta = ModelAdvancedTournament()
 ta.retrieve_tournament()
 it = AdvancedTournamentViews(ta.pairing_first_round())
 it.views_round_input()"""

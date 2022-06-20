@@ -12,3 +12,4 @@ class AddPlayerViews:
         self.b_day = input("Date d'anniversaire : ")
         self.gender = input("Genre : ")
         self.rank = input("Rang : ")
+        return self.l_name, self.f_name, self.b_day, self.gender, self.rank
