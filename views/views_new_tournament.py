@@ -18,3 +18,4 @@ class ViewsNewTournament:
         self.t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720, 2123311234976, 1988607754144, 1384106246048, 2187293245344]
         self.t_time = input("Bullet/Blitz/coup rapide : ")
         self.t_desc = input("Entrez description : ")
+        return self.t_name, self.t_place, self.t_date, self.t_round, self.t_tourne, self.t_players, self.t_time, self.t_desc
