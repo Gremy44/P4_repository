@@ -1,18 +1,10 @@
-from controllers.controller_adavance_tournament import AdvanceTournamentController
-from models.model_advanced_tournament import ModelAdvancedTournament
-from models.model_new_tournament import ModelNewTournament
-from models.models_save_round import SaveAdvanceTournamentModel
-from views.views_add_player import AddPlayerViews
-from views.views_advanced_tournament import AdvancedTournamentViews
-from controllers.controller_add_player import AddPlayerController
-from models.model_add_player import AddPlayerModel
-
+#from controllers.controller_add_player import AddPlayerController
+#from controllers.tournament_controller import TournamentController
 
 """
 #Nouveau joueur
-jv = AddPlayerModel()
-jv.player_infos()
-jv.player_db_reg()
+run = AddPlayerController()
+run.add_player()
 """
 
 """
@@ -23,7 +15,7 @@ tn.input_tournament_db_reg()
 tn.save_input_tournament_db_reg()
 """
 
-ta = ModelAdvancedTournament() 
+"""ta = ModelAdvancedTournament() 
 tn = AdvancedTournamentViews()
 td = AdvanceTournamentController()
 ta.retrieve_tournament() # recupère les infos dans la db
@@ -35,4 +27,7 @@ for i in range((len(ta.my_paires))):
         #ta.save_advance()
     print("tour : ", i)
 
-#SaveAdvanceTournamentModel().save_advance()
+#SaveAdvanceTournamentModel().save_advance()"""
+
+exec(open("./controllers/tournament_controller.py").read())
+#exec(open("./controllers/controller_add_player.py").read()) #add player

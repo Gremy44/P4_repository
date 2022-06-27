@@ -1,4 +1,4 @@
-from views.views_new_tournament import ViewsNewTournament
+from views.views_tournament import ViewsNewTournament
 
 class ControllerNewTournament():
     def __init__(self):

@@ -5,6 +5,7 @@ class AddPlayerViews:
         self.b_day = b_day
         self.gender = gender
         self.rank = rank
+        self.score = 0.0
 
     def ask_player_infos(self):
         self.l_name = input("Entrez nom : ")
@@ -12,4 +13,4 @@ class AddPlayerViews:
         self.b_day = input("Date d'anniversaire : ")
         self.gender = input("Genre : ")
         self.rank = input("Rang : ")
-        return self.l_name, self.f_name, self.b_day, self.gender, self.rank
+        return self.l_name, self.f_name, self.b_day, self.gender, self.rank, self.score

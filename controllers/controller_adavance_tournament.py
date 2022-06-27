@@ -10,7 +10,7 @@ class AdvanceTournamentController():
     def joueur_extra_infos(self):
         inc_1 = 0
         inc_2 = 0
-        for i in AdvancedTournamentViews().views_round_input(ta.my_paires): #ajoute les points aux infos joueurs
+        for i in AdvancedTournamentViews().views_round_input(): #ajoute les points aux infos joueurs
             for n in i:
                 n["Points"] = AdvancedTournamentViews().complete_result[inc_1][inc_2][1]
                 inc_2 += 1
