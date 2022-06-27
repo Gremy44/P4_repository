@@ -1,7 +1,4 @@
-from msilib import Table
-from msilib.sequence import tables
-import os
-from tinydb import TinyDB, Query, where
+from tinydb import TinyDB, where
 
 class ModelRetrieveTournament:
     def __init__(self):
@@ -50,9 +47,12 @@ class ModelRetrieveTournament:
 
         for i in ma_table:
             print("Table actuelle : ", i)
+            #deserialise les joueurs
             deSerialized_players_1 = pdb.search(where('id_player') == i[f"Ronde {compt_1+1}"][0])
             deSerialized_players_2 = pdb.search(where('id_player') == i[f"Ronde {compt_1+1}"][2])
+            #créé la liste des joueurs
             player = [*deSerialized_players_1, *deSerialized_players_2]
+            #ajoute leur score actuel
             player[0]['Score'] = i[f"Ronde {compt_1+1}"][1]
             player[1]['Score'] = i[f"Ronde {compt_1+1}"][3]
             player_ids.append(player)
@@ -61,8 +61,4 @@ class ModelRetrieveTournament:
         return player_ids # format [[{...}{...}][{...}{...}]...]
 
         
-        
-            
-        #self.ct.default_table_name = "Input_Tournament"
-        #self.current_tournament = self.ct.search(where("Tournament state") == True)#recherche tournois en cours dans db
 

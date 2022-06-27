@@ -3,6 +3,27 @@ from models.tournament_model_write import ModelWriteTournament
 from models.tournament_model_retrieve import ModelRetrieveTournament
 
 class TournamentController:
+    ''' Déroulé d'un nouveau tournoi : 
+    - demande les infos tournois
+    - stock les infos tournois dans la db 'save_tournement_infos.json'
+    - créé un round 0 avec juste les joueurs qui participent au tournois
+      (enregistré dans la db 'save_tournement_infos.json')
+    --- pret pour commencer le premier round ---
+    Déroulé d'un tour
+    - cherche dans la db 'save_tournement_infos.json' le round
+    - si aucun round => fais le pairing du premier round 
+        - on entre les résulats du tour 
+        - les résultats sont écris dans la db 'save_tournement_infos.json'
+        - passe au round suivant si pas la fin 
+    - sinon récupère les infos du round en cour => fait le pairing  
+        - on entre les résulats du tour 
+        - les résultats sont écris dans la db 'save_tournement_infos.json'
+        - passe au round suivant si pas la fin 
+    - si c'est la fin
+        - donne les scores
+        - rentre les résulats dans une nouvelle db 'tournament.json'
+        - supprime le fichier 'save_tournement_infos.json'
+    '''
     def __init__(self):
         self.t_name    = ""
         self.t_place   = ""
@@ -99,19 +120,6 @@ while recuperation_info.id_round < tournoi.t_round:
         r_1 = tournoi.round()
         recuperation_info.id_round += 1
 
-# regarder le déroulé du script et de la boucle pour la faire fonctionner comme elle devrait
-"""for recuperation_info.id_round in range(tournoi.t_round):
-    if recuperation_info.id_round == 0:
-        print(" cest zero")
-        pairing_1 = tournoi.pairing_first_round(players)
-        #db_tournoi.save_tournament_advance(pairing_1, i)
-        r_1 = tournoi.round()
-        #print(r_1)
-    else:
-        print("cest ok")
-        #db_tournoi.save_tournament_advance(r_1, i)
-        pairing_2 = tournoi.pairing_other_round(r_1)
-        r_1 = tournoi.round()"""
 
 
 
