@@ -16,3 +16,6 @@
 .controllers/test.py
 .controllers/test_02.py
 .models/player_data_base
+/views/glade
+/views/glade/main.glade
+/views/test_glade_views.py
