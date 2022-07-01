@@ -1,33 +1,46 @@
-#from controllers.controller_add_player import AddPlayerController
-#from controllers.tournament_controller import TournamentController
+from controllers.tournament_controller import TournamentController
+from models.tournament_model_write import ModelRetrieveTournament, ModelWritePlayer, ModelWriteTournament
+from views.views_tournament import ViewsTournament
 
-"""
-#Nouveau joueur
-run = AddPlayerController()
-run.add_player()
-"""
 
-"""
-#Nouveau tournois
-tn = ModelNewTournament()
-tn.new_tournament_infos()
-tn.input_tournament_db_reg()
-tn.save_input_tournament_db_reg()
-"""
+tournoi_controller = TournamentController()
+tournoi_views = ViewsTournament()
+tournoi_retrieve = ModelRetrieveTournament()
+tournoi_players_retrieve = ModelRetrieveTournament()
+tournoi_write_player = ModelWritePlayer()
+tournoi_finished = ModelWriteTournament()
 
-"""ta = ModelAdvancedTournament() 
-tn = AdvancedTournamentViews()
-td = AdvanceTournamentController()
-ta.retrieve_tournament() # recupère les infos dans la db
-ta.pairing_first_round() # fait les paires
-for i in range((len(ta.my_paires))):
-    if i == 0:
-        tn.views_round_input(ta.my_paires)
-        td.joueur_extra_infos()
-        #ta.save_advance()
-    print("tour : ", i)
+# hydrate tournoi retrieve avec les infos tournoi 
+# si pas de tournoi créé, demande les infos et en créé un 
+# si tournoi, récupère les infos dans la db
 
-#SaveAdvanceTournamentModel().save_advance()"""
+if tournoi_retrieve.test_current_tournament() == True:
+    tournoi_retrieve.retrieve_tournament()
+else:
+    tournoi_controller.infos_tournament_by_views()
+    tournoi_write_tournament = ModelWriteTournament(tournoi_controller.t_name,
+                                                    tournoi_controller.t_place,
+                                                    tournoi_controller.t_date,
+                                                    tournoi_controller.t_round,
+                                                    tournoi_controller.t_ronde,
+                                                    tournoi_controller.t_players,
+                                                    tournoi_controller.t_time,
+                                                    tournoi_controller.t_desc)
+    tournoi_write_tournament.save_input_tournament_db_reg()
 
-exec(open("./controllers/tournament_controller.py").read())
-#exec(open("./controllers/controller_add_player.py").read()) #add player
+while tournoi_retrieve.current_round() < tournoi_controller.t_round:
+    if tournoi_players_retrieve.test_current_round() == True :
+        print("round existant")
+        players = tournoi_players_retrieve.retrieve_round()
+        players_pairing = tournoi_controller.pairing_other_round(players)
+        players_round = tournoi_views.views_round_input(players_pairing, tournoi_players_retrieve.id_round)
+        tournoi_write_player.save_round_advance(players_round, tournoi_players_retrieve.id_round)
+    else:
+        print("pas de round existant")
+        players = tournoi_players_retrieve.retrieve_players_input_information()
+        players_pairing = tournoi_controller.pairing_first_round(players)
+        players_round = tournoi_views.views_round_input(players_pairing, tournoi_players_retrieve.id_round+1)
+        tournoi_write_player.save_round_advance(players_round, tournoi_players_retrieve.id_round+1)
+
+tournoi_views.results()
+tournoi_finished.save_finished_tournament()
