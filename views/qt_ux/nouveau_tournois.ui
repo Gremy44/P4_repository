@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>700</height>
+    <height>878</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,43 +17,12 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="leftMargin">
-       <number>10</number>
-      </property>
-      <property name="topMargin">
-       <number>10</number>
-      </property>
-      <property name="rightMargin">
-       <number>10</number>
-      </property>
-      <property name="bottomMargin">
-       <number>10</number>
-      </property>
       <item>
-       <spacer name="verticalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_6">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
+       <widget class="QLabel" name="label">
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>75</height>
+          <height>130</height>
          </size>
         </property>
         <property name="font">
@@ -63,7 +32,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Ajouter un joueur</string>
+         <string>Création de tournoi</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -72,17 +41,8 @@
       </item>
       <item>
        <layout class="QFormLayout" name="formLayout">
-        <property name="sizeConstraint">
-         <enum>QLayout::SetMaximumSize</enum>
-        </property>
         <property name="rowWrapPolicy">
          <enum>QFormLayout::WrapAllRows</enum>
-        </property>
-        <property name="labelAlignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-        <property name="formAlignment">
-         <set>Qt::AlignCenter</set>
         </property>
         <property name="leftMargin">
          <number>20</number>
@@ -96,32 +56,41 @@
         <property name="bottomMargin">
          <number>0</number>
         </property>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
           <property name="font">
            <font>
             <pointsize>12</pointsize>
            </font>
           </property>
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
+          <property name="text">
+           <string>Nom du tournoi :</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_9">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
           </property>
           <property name="text">
-           <string>Nom</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <string>Lieu du tournoi :</string>
           </property>
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QLineEdit" name="p_l_name">
+         <widget class="QLineEdit" name="lineEdit_8">
           <property name="font">
            <font>
             <pointsize>12</pointsize>
@@ -130,53 +99,57 @@
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="label_4">
           <property name="font">
            <font>
             <pointsize>12</pointsize>
            </font>
           </property>
           <property name="text">
-           <string>Prenom</string>
+           <string>Date de début :</string>
           </property>
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QLineEdit" name="p_f_name">
+         <widget class="QDateEdit" name="dateEdit">
           <property name="font">
            <font>
             <pointsize>12</pointsize>
            </font>
           </property>
+          <property name="dateTime">
+           <datetime>
+            <hour>0</hour>
+            <minute>0</minute>
+            <second>0</second>
+            <year>2022</year>
+            <month>1</month>
+            <day>1</day>
+           </datetime>
+          </property>
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item row="4" column="0">
-         <widget class="QLabel" name="label_3">
+         <widget class="QLabel" name="label_5">
           <property name="font">
            <font>
             <pointsize>12</pointsize>
            </font>
           </property>
           <property name="text">
-           <string>Date de naissance </string>
+           <string>Date de fin :</string>
           </property>
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QDateEdit" name="p_bday">
+         <widget class="QDateEdit" name="dateEdit_2">
           <property name="font">
            <font>
             <pointsize>12</pointsize>
            </font>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="keyboardTracking">
-           <bool>true</bool>
-          </property>
-          <property name="showGroupSeparator" stdset="0">
-           <bool>false</bool>
           </property>
           <property name="dateTime">
            <datetime>
@@ -194,114 +167,178 @@
          </widget>
         </item>
         <item row="5" column="0">
-         <widget class="QLabel" name="label_5">
+         <widget class="QLabel" name="label_6">
           <property name="font">
            <font>
             <pointsize>12</pointsize>
            </font>
           </property>
           <property name="text">
-           <string>Genre (H/F/N)</string>
+           <string>Nombre de tours :</string>
           </property>
          </widget>
         </item>
         <item row="5" column="1">
+         <widget class="QSpinBox" name="spinBox">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="wrapping">
+           <bool>false</bool>
+          </property>
+          <property name="frame">
+           <bool>true</bool>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="minimum">
+           <number>4</number>
+          </property>
+          <property name="maximum">
+           <number>4</number>
+          </property>
+          <property name="value">
+           <number>4</number>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_7">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Tournées :</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QSpinBox" name="spinBox_2">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_8">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Joueurs :</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QPushButton" name="pushButton">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Selection des participants</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_9">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Contrôle du temps</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QRadioButton" name="rb_h">
+           <widget class="QRadioButton" name="radioButton_2">
             <property name="font">
              <font>
               <pointsize>12</pointsize>
              </font>
             </property>
             <property name="text">
-             <string>Homme</string>
+             <string>Blitz</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="rb_f">
+           <widget class="QRadioButton" name="radioButton">
             <property name="font">
              <font>
               <pointsize>12</pointsize>
              </font>
             </property>
             <property name="text">
-             <string>Femme</string>
+             <string>Bullet</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="rb_n">
+           <widget class="QRadioButton" name="radioButton_3">
             <property name="font">
              <font>
               <pointsize>12</pointsize>
              </font>
             </property>
             <property name="text">
-             <string>Neutre</string>
+             <string>Coup rapide</string>
             </property>
            </widget>
           </item>
          </layout>
         </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="label_4">
+        <item row="9" column="0">
+         <widget class="QLabel" name="label_10">
           <property name="font">
            <font>
             <pointsize>12</pointsize>
            </font>
           </property>
           <property name="text">
-           <string>Rang</string>
+           <string>Description :</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="1">
-         <widget class="QSpinBox" name="p_rank">
+        <item row="9" column="1">
+         <widget class="QTextEdit" name="textEdit">
           <property name="font">
            <font>
             <pointsize>12</pointsize>
            </font>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="maximum">
-           <number>999</number>
-          </property>
          </widget>
-        </item>
-        <item row="7" column="1">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="1">
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="add_player">
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -311,16 +348,16 @@
         <property name="font">
          <font>
           <family>Noto Sans Light</family>
-          <pointsize>18</pointsize>
+          <pointsize>16</pointsize>
          </font>
         </property>
         <property name="text">
-         <string>Ajouter</string>
+         <string>Valider</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="add_player_back">
+       <widget class="QPushButton" name="pushButton_3">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -330,7 +367,7 @@
         <property name="font">
          <font>
           <family>Noto Sans Light</family>
-          <pointsize>18</pointsize>
+          <pointsize>16</pointsize>
          </font>
         </property>
         <property name="text">

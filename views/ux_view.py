@@ -1,6 +1,8 @@
 from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QLineEdit, QSpinBox, QDateEdit
 from PyQt6 import uic
+from xml.etree import ElementTree as et
 import sys
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -64,6 +66,22 @@ class PlayersWindow(QMainWindow):
         self.mw = MainWindow()
         self.mw.show()
         self.close()
+
+    def modifyXml(self):
+        """
+        Modifie les valeurs des fichiers xml pour les adapter dans l'interface
+        """
+        filename = "./views/qt_ux/players.ui"
+        xmlTree = et.parse(filename)
+        rootElement = xmlTree.getroot()
+        #chemin dans le xml
+        for element in rootElement.findall("widget/widget/layout/item/layout/item/widget/property"):
+            #cherche le therme 'joueurs'
+            if element.findtext('string') == 'Joueurs' :
+                #Change the element
+                element.find('string').text = "Joueuses"
+        #Write the modified xml file.        
+        xmlTree.write(filename,encoding='UTF-8',xml_declaration=True)
         
 class AddPlayers(QMainWindow):
     def __init__(self):

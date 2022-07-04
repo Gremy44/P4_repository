@@ -1,7 +1,7 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>players</class>
- <widget class="QMainWindow" name="players">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -30,10 +30,35 @@
        <number>10</number>
       </property>
       <item>
-       <widget class="QLabel" name="Player">
-        <property name="enabled">
-         <bool>true</bool>
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>120</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Noto Sans</family>
+          <pointsize>22</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Tournoi</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -46,39 +71,24 @@
           <height>0</height>
          </size>
         </property>
-        <property name="baseSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
         <property name="font">
          <font>
-          <family>Noto Sans</family>
-          <pointsize>22</pointsize>
+          <family>Noto Sans Light</family>
+          <pointsize>18</pointsize>
          </font>
         </property>
         <property name="text">
-         <string>Joueurs</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
+         <string>Commencer un nouveau tournoi</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="AddPlayer">
+       <widget class="QPushButton" name="pushButton_2">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>75</height>
-         </size>
         </property>
         <property name="font">
          <font>
@@ -87,50 +97,22 @@
          </font>
         </property>
         <property name="text">
-         <string>Ajouter un joueur</string>
+         <string>Reprendre un tournoi</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="ListPlayers">
+       <widget class="QPushButton" name="pushButton_3">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>75</height>
-         </size>
         </property>
         <property name="font">
          <font>
           <family>Noto Sans Light</family>
           <pointsize>18</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Voir la liste de joueurs</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="Back">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>75</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Noto Sans Light</family>
-          <pointsize>16</pointsize>
          </font>
         </property>
         <property name="text">
@@ -143,6 +125,6 @@
    </layout>
   </widget>
  </widget>
- <resources />
- <connections />
+ <resources/>
+ <connections/>
 </ui>
