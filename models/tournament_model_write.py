@@ -107,6 +107,16 @@ class ModelRetrieveTournament:
         current_tournament.default_table_name = "Save_Input_Tournament"
         tournament = current_tournament.all()
         return tournament
+    
+    def retrieve_all_player_from_db(self):
+        '''
+        - Retourne liste de tous les joueurs de la db
+        '''
+        ap = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
+        ap.default_table_name = "Players"
+        allplayers = ap.all()
+        
+        return allplayers
 
     def retrieve_players_input_information(self): 
         '''

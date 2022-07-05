@@ -55,11 +55,20 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>120</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <family>Noto Sans</family>
           <pointsize>22</pointsize>
          </font>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="text">
          <string>Bienvenu</string>

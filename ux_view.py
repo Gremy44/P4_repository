@@ -1,7 +1,8 @@
-from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QLineEdit, QSpinBox, QDateEdit
-from PyQt6 import uic
+from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QLineEdit, QSpinBox, QDateEdit, QListView
+from PyQt6 import uic, QtWidgets
 from xml.etree import ElementTree as et
 import sys
+from models.tournament_model_write import ModelRetrieveTournament
 
 
 class MainWindow(QMainWindow):
@@ -107,6 +108,7 @@ class AddPlayers(QMainWindow):
 
     def btnAdd(self):
         self.wplayer = PlayersWindow()
+        print(self.send_add_player_infos())
         self.wplayer.show()
         self.close()
 
@@ -115,18 +117,54 @@ class AddPlayers(QMainWindow):
         self.wplayer.show()
         self.close()
 
+    def send_add_player_infos(self):
+        """
+        - Retourne les infos rentrées dans "ajouté joueur"
+        - Format : tupple
+        """
+        self.gender = ""
+
+        if self.rbtn_gender_h.isChecked() == True:
+            self.gender = "Homme"
+        elif self.rbtn_gender_f.isChecked() == True:
+            self.gender = "Femme"
+        else:
+            self.gender = "Neutre"
+
+        return(self.line_l_name.text(), 
+               self.line_f_name.text(),
+               self.date_bday.text(),
+               self.gender,
+               self.sb_rank.text()
+               )
+
 class PlayerList(QMainWindow):
     def __init__(self):
         super(PlayerList, self).__init__()
+
+        self.myplayersobj = ModelRetrieveTournament()
 
         # Load the UI file
         uic.loadUi('./views/qt_ux/player_list.ui', self)
 
         # Define widgets
         self.btn_back = self.findChild(QPushButton, "back")
+        self.list_db = self.findChild(QListView, "listplayers")
 
         # Connecting to actions
         self.btn_back.clicked.connect(self.btnBack)
+        
+        # List Widget
+        #self.get_data()
+
+    def get_data(self):
+        model = self.myplayersobj.retrieve_all_player_from_db()
+        for index in range(model.rowCount()):
+            # item = model.data(index)
+            item = model.data(index, 1, Qt.DisplayRole)
+            print(item)
+        
+        
 
     def btnBack(self):
         self.wplayer = PlayersWindow()
