@@ -114,7 +114,7 @@
             "Prenom": "Sarah",
             "Date de naissance": "14/09/1992",
             "Genre": "F",
-            "Rang": 74,
+            "Rang": "74",
             "Score": 0.0
         },
         "14": {
@@ -123,7 +123,7 @@
             "Prenom": "Philibert",
             "Date de naissance": "21/12/1987",
             "Genre": "H",
-            "Rang": 32,
+            "Rang": "32",
             "Score": 0.0
         },
         "15": {
@@ -151,6 +151,15 @@
             "Date de naissance": "12/04/1992",
             "Genre": "H",
             "Rang": "56",
+            "Score": 0.0
+        },
+        "18": {
+            "id_player": 2668837903040,
+            "Nom": "Ben Abdalah",
+            "Prenom": "Sassi",
+            "Date de naissance": "18/05/1988",
+            "Genre": "H",
+            "Rang": "5",
             "Score": 0.0
         }
     }

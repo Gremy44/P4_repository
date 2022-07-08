@@ -1,5 +1,5 @@
 from models.tournament_model_write import AddPlayerModel, ModelRetrieveTournament
-from views.views_tournament import AddPlayerViews, ViewsTournament
+from views.views_tournament import AddPlayerViews, AddPlayers, ViewsTournament
 
 
 class AddPlayerController:
@@ -13,12 +13,16 @@ class AddPlayerController:
                                        infos_player[2], infos_player[3],
                                        infos_player[4])
 
+    def add_player_GUI(self):
+        add_player_view = AddPlayers.send_add_player_infos()
+        AddPlayerModel().player_db_reg(add_player_view[0], add_player_view[1],
+                                       add_player_view[2], add_player_view[3],
+                                       add_player_view[4])
+
 class TournamentController:
     ''' Déroulé d'un nouveau tournoi : 
     - demande les infos tournois
     - stock les infos tournois dans la db 'save_tournement_infos.json'
-    - créé un round 0 avec juste les joueurs qui participent au tournois
-      (enregistré dans la db 'save_tournement_infos.json')
     --- pret pour commencer le premier round ---
     Déroulé d'un tour
     - cherche dans la db 'save_tournement_infos.json' le round
@@ -35,9 +39,8 @@ class TournamentController:
         - rentre les résulats dans une nouvelle db 'tournament.json'
         - supprime le fichier 'save_tournement_infos.json'
     '''
-    def __init__(self, t_name = "", t_place = "", t_date = "", t_round = 4, t_ronde = 0, 
-                 t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720, 
-                              2123311234976, 1988607754144, 1384106246048, 2187293245344], 
+    def __init__(self, t_name = "", t_place = "", t_date = "", t_round = 0, t_ronde = 0, 
+                 t_players = [], 
                  t_time = "", t_desc= ""):
 
         self.t_name    = t_name

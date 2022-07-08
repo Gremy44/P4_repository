@@ -16,7 +16,7 @@ class AddPlayerModel:
         except FileExistsError:
             pass
         # ----.json creation----
-        self.db = TinyDB("MyForm, self") # obj creation and path
+        self.db = TinyDB("./chess_data_base/players_data_base/players_data_base.json") # obj creation and path
         self.db.default_table_name = "Players" # table name
 
         self.db.insert({"id_player": self.player_id(),
@@ -26,6 +26,7 @@ class AddPlayerModel:
                         "Genre" : gender, 
                         "Rang" : rank,
                         "Score" : 0.0}) 
+                        
 class ModelWriteTournament:
     def __init__(self, t_name = "", t_place = "", t_date = "", t_round = 4, t_ronde = 0, t_players = [], t_time = "", t_desc = ""):
         

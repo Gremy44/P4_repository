@@ -1,7 +1,7 @@
 from controllers.tournament_controller import TournamentController
 from models.tournament_model_write import ModelRetrieveTournament, ModelWritePlayer, ModelWriteTournament
-from views.views_tournament import ViewsTournament
-
+from views.views_tournament import MainWindow, ViewsTournament
+import typer
 
 tournoi_controller = TournamentController()
 tournoi_views = ViewsTournament()
@@ -9,6 +9,11 @@ tournoi_retrieve = ModelRetrieveTournament()
 tournoi_players_retrieve = ModelRetrieveTournament()
 tournoi_write_player = ModelWritePlayer()
 tournoi_finished = ModelWriteTournament()
+
+choix_gui_console = typer.confirm("Utiliser l'interface graphique ?")
+
+if choix_gui_console :
+    MainWindow.goGui()
 
 # hydrate tournoi retrieve avec les infos tournoi 
 # si pas de tournoi créé, demande les infos et en créé un 

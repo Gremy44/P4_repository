@@ -16,3 +16,4 @@
 .controllers/test.py
 .controllers/test_02.py
 .models/player_data_base
+/views/qt_ux/qt_ux_temp
