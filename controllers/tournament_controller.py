@@ -39,7 +39,7 @@ class TournamentController:
         - rentre les résulats dans une nouvelle db 'tournament.json'
         - supprime le fichier 'save_tournement_infos.json'
     '''
-    def __init__(self, t_name = "", t_place = "", t_date = "", t_round = 0, t_ronde = 0, 
+    def __init__(self, t_name = "", t_place = "", t_date = "", t_round = 4, t_ronde = 0, 
                  t_players = [], 
                  t_time = "", t_desc= ""):
 

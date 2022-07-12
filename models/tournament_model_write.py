@@ -26,9 +26,11 @@ class AddPlayerModel:
                         "Genre" : gender, 
                         "Rang" : rank,
                         "Score" : 0.0}) 
+
+        self.db.close()
                         
 class ModelWriteTournament:
-    def __init__(self, t_name = "", t_place = "", t_date = "", t_round = 4, t_ronde = 0, t_players = [], t_time = "", t_desc = ""):
+    def __init__(self, t_name = "", t_place = "", t_date = "", t_round = 4, t_ronde = 4, t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720, 2123311234976, 1988607754144, 1384106246048, 2187293245344], t_time = "", t_desc = ""):
         
         self.t_name    = t_name
         self.t_place   = t_place
@@ -62,6 +64,8 @@ class ModelWriteTournament:
                         "Time"          : self.t_time,
                         "Description"   : self.t_desc})
 
+        db_save.close()
+
     def save_finished_tournament(self):
         '''
         - déplace le fichier json du tournois terminé dans le dossier 'finished_tournament'
@@ -76,6 +80,14 @@ class ModelWriteTournament:
         except FileExistsError:
             pass
         os.rename("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json",f"./chess_data_base/tounament/finished_tournaments/tournament_{ct_id_ls[0]['id_tournament']}_infos.json")
+
+    def clear_tournament(self):
+        file_path = "./chess_data_base/tounament/actual_tournament/save_tournament_infos.json"
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+        else:
+            "Pas de fichier à ce chemin"
+            pass
         
 class ModelWritePlayer:
     def __init__(self) -> None:
@@ -95,6 +107,8 @@ class ModelWritePlayer:
             print(f"Sauvegarde ronde {i+1} : ", joueurs)
             db_save.insert({f"Ronde {i+1}" : joueurs})
 
+        db_save.close()
+
 class ModelRetrieveTournament:
     def __init__(self):
         self.id_round = 0
@@ -107,6 +121,9 @@ class ModelRetrieveTournament:
         current_tournament = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
         current_tournament.default_table_name = "Save_Input_Tournament"
         tournament = current_tournament.all()
+
+        current_tournament.close()
+
         return tournament
     
     def retrieve_all_player_from_db(self):
@@ -116,6 +133,8 @@ class ModelRetrieveTournament:
         ap = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
         ap.default_table_name = "Players"
         allplayers = ap.all()
+
+        ap.close()
         
         return allplayers
 
@@ -144,6 +163,8 @@ class ModelRetrieveTournament:
         for i in player_ids:
             deSerialized_players = self.db.search(where('id_player') == i) 
             self.players.append(deSerialized_players)
+
+        self.ct.close()
         
         return self.players
 
@@ -153,6 +174,9 @@ class ModelRetrieveTournament:
         '''
         cr = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
         tables_nb = len(cr.tables())-1
+
+        cr.close()
+        
         return tables_nb
 
     def test_current_tournament(self):
@@ -205,6 +229,8 @@ class ModelRetrieveTournament:
             player[1]['Score'] = i[f"Ronde {compt_1}"][3]
             player_ids.append(player)
             compt_1 += 1
+
+        rtt.close()
 
         return player_ids
 

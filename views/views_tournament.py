@@ -4,7 +4,8 @@ from PyQt6.QtCore import QSize, Qt
 from xml.etree import ElementTree as et
 from models.tournament_model_write import AddPlayerModel, ModelRetrieveTournament, ModelWriteTournament
 import sys
-
+import os
+import numpy as np
 # --------------
 # ----- CL -----
 # --------------
@@ -19,28 +20,132 @@ class AddPlayerViews:
         self.score = 0.0
 
     def ask_player_infos(self):
-        self.l_name = input("Entrez nom : ")
-        self.f_name = input("Entrez prénom : ")
-        self.b_day = input("Date d'anniversaire : ")
-        self.gender = input("Genre : ")
-        self.rank = input("Rang : ")
-        return self.l_name, self.f_name, self.b_day, self.gender, self.rank, self.score
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|       _     _             _                        |--")
+        print("--|      / \   (_) ___  _   _| |_ ___ _ __             |--")
+        print("--|     / _ \  | |/ _ \| | | | __/ _ \ '__|            |--")
+        print("--|    / ___ \ | | (_) | |_| | ||  __/ |               |--")
+        print("--|   /_/   \_\/ |\___/_\__,_|\__\___|_|               |--")
+        print("--|    _   _ |__/     (_) ___  _   _  ___ _   _ _ __   |--")
+        print("--|   | | | | '_ \    | |/ _ \| | | |/ _ \ | | | '__|  |--")
+        print("--|   | |_| | | | |   | | (_) | |_| |  __/ |_| | |     |--")
+        print("--|    \__,_|_| |_|  _/ |\___/ \__,_|\___|\__,_|_|     |--")
+        print("--|                 |__/                               |--")
+        print("----------------------------------------------------------")
+        print("------------------ | Ajouter un joueur | -----------------")
+        print("----------------------------------------------------------")
+
+        self.l_name = input(" | - Entrez nom : ")
+        self.f_name = input(" | - Entrez prénom : ")
+        self.b_day  = input(" | - Date d'anniversaire (jj/mm/aaaa): ")
+        self.gender = input(" | - Genre (H/F/N) : ")
+        self.rank   = input(" | - Rang : ")
+    
+        print(" -------------------------------------------------------- ")
+        print("|Valider les informations et ajouter à la base de données|")
+        print(" -------------------------------------------------------- ")
+        print("| - 1 : Valider")
+        print("| - 2 : Retour")
+        print("| ------------------------------------------------------- ")
+        val_player = input("| - Votre choix : ")
+
+        if int(val_player) == 1:
+            ClMenu.cls()
+            return self.l_name, self.f_name, self.b_day, self.gender, self.rank, self.score
+        else:
+            ClMenu.cls()
+            pass
+
+        
+
+        
+
+    def reg_players(self):
+        '''
+        Retourne la liste des joueurs enregistrés dans la db
+        '''
+        tournoi_retrieve = ModelRetrieveTournament()
+        player_from_db = tournoi_retrieve.retrieve_all_player_from_db()
+        inc_temp_01 = 1
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|      _                                             |--")
+        print("--|     | | ___  _   _  ___ _   _ _ __ ___             |--")
+        print("--|  _  | |/ _ \| | | |/ _ \ | | | '__/ __|            |--")
+        print("--| | |_| | (_) | |_| |  __/ |_| | |  \__ \            |--")
+        print("--|  \___/ \___/ \__,_|\___|\__,_|_|  |___/            |--")
+        print("--|                            _     _         __      |--")
+        print("--|   ___ _ __  _ __ ___  __ _(_)___| |_ _ __ /_/  ___ |--")
+        print("--|  / _ \ '_ \| '__/ _ \/ _` | / __| __| '__/ _ \/ __||--")
+        print("--| |  __/ | | | | |  __/ (_| | \__ \ |_| | |  __/\__ \|--")
+        print("--|  \___|_| |_|_|  \___|\__, |_|___/\__|_|  \___||___/|--")
+        print("--|                      |___/                         |--")
+        print("----------------------------------------------------------")
+        print("----------------- | Ajouter un joueur | ------------------")
+        print("----------------------------------------------------------")
+        print("")
+        
+        # delete the score line useless for the view 
+        for i in player_from_db:
+            del i['Score']
+
+        for i in player_from_db:
+            #data = list(i.items())
+            #an_array = np.array(data)
+            print()
+            print(f'------ | Joueur N°{inc_temp_01} | ------')
+            #print(an_array)
+            for x, y in i.items():
+                print(f" | - {x} : {y} ")
+            inc_temp_01 += 1
+
+        print("")
+        input("Appuyez sur une touche pour continuer.")
+        ClMenu.cls()
 
 class ViewsTournament:
     def __init__(self):
         self.complete_result = []
         self.id_round_views = ModelRetrieveTournament().id_round
+        self.t_players = []
 
     def ask_tounament_infos(self):
-        self.t_name    = input("Entrez nom : ")
-        self.t_place   = input("Entrez lieu : ")
-        self.t_date    = input("Entrez date : ")
+        self.cls()
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|       _   _                                        |--")
+        print("--|      | \ | | ___  _   ___   _____  __ _ _   _      |--")
+        print("--|      |  \| |/ _ \| | | \ \ / / _ \/ _` | | | |     |--")
+        print("--|      | |\  | (_) | |_| |\ V /  __/ (_| | |_| |     |--")
+        print("--|      |_|_\_|\___/ \__,_| \_/ \___|\__,_|\__,_|     |--")
+        print("--|      |_   _|__  _   _ _ __ _ __   ___ (_)          |--")
+        print("--|        | |/ _ \| | | | '__| '_ \ / _ \| |          |--")
+        print("--|        | | (_) | |_| | |  | | | | (_) | |          |--")
+        print("--|        |_|\___/ \__,_|_|  |_| |_|\___/|_|          |--")
+        print("----------------------------------------------------------")
+        print("----------- | Entrez les information tournois | ----------")
+        print("----------------------------------------------------------")
+                                          
+        self.t_name    = input(" | - Entrez nom : ")
+        self.t_place   = input(" | - Entrez lieu : ")
+        self.t_date    = input(" | - Entrez date : ")
         self.t_round   = 4
-        self.t_rondes  = input("Entrez instances rondes : ")
-        self.t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720,
-                          2123311234976, 1988607754144, 1384106246048, 2187293245344]
-        self.t_time    = input("Bullet/Blitz/coup rapide : ")
-        self.t_desc    = input("Entrez description : ")
+        self.t_rondes  = input(" | - Entrez instances rondes : ")
+        print(" |   - Test : utiliser une liste déjà faite ?:")
+        print(" | 1 - Utiliser liste déjà faite")
+        print(" | 2 - Faire ma liste")
+        cp = input(" |   - Entrez votre choix : ")
+        if int(cp) == 1:
+            self.t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720,
+                              2123311234976, 1988607754144, 1384106246048, 2187293245344]
+        else:                      
+            for i in range(8):
+                j_temp = input(f" | - Entrez l'ID joueur du joueur N°:{i+1} : ")
+                self.t_players.append(int(j_temp))
+        print(self.t_players)
+        self.t_time    = input(" | - Bullet/Blitz/coup rapide : ")
+        self.t_desc    = input(" | - Entrez description : ")
 
         return self.t_name, self.t_place, self.t_date, self.t_round, self.t_rondes, self.t_players, self.t_time, self.t_desc
 
@@ -48,32 +153,208 @@ class ViewsTournament:
         '''
         - input pour les resulats de chaque round
         '''
-        print("round : ", ronde)
+        self.cls()
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|             __  __       _       _                 |--")
+        print("--|            |  \/  | __ _| |_ ___| |__              |--")
+        print("--|            | |\/| |/ _` | __/ __| '_ \             |--")
+        print("--|            | |  | | (_| | || (__| | | |            |--")
+        print("--|            |_|  |_|\__,_|\__\___|_| |_|            |--")
+        print("--|                                                    |--")
+        print("----------------------------------------------------------")     
+        print("-------------------- | round : ", ronde," | ---------------------")
+        print("----------------------------------------------------------")
+
         for i in range(len(sorted_paires)):
-            print("Ronde", ronde,":",
-                  sorted_paires[i][0]['Nom'],
-                  sorted_paires[i][0]['Prenom'], "contre",
+            print("----------------------| Ronde", i+1,": |-----------------------")
+            print("----------------------------------------------------------")
+            print(sorted_paires[i][0]['Nom'],
+                  sorted_paires[i][0]['Prenom'], " |--- VS ---| ",
                   sorted_paires[i][1]['Nom'],
                   sorted_paires[i][1]['Prenom'])
-            score_p1 = input(f"Score joueur {sorted_paires[i][0]['Nom']} {sorted_paires[i][0]['Prenom']}: ")
-            score_p2 = input(f"Score joueur {sorted_paires[i][1]['Nom']} {sorted_paires[i][1]['Prenom']}: ")
+            score_p1 = input(f"| - Score joueur {sorted_paires[i][0]['Nom']} {sorted_paires[i][0]['Prenom']}: ")
+            score_p2 = input(f"| - Score joueur {sorted_paires[i][1]['Nom']} {sorted_paires[i][1]['Prenom']}: ")
             sorted_paires[i][0]['Score'] = sorted_paires[i][0]['Score'] + float(score_p1)
             sorted_paires[i][1]['Score'] = sorted_paires[i][1]['Score'] + float(score_p2)
+            print("")
 
         return sorted_paires 
 
     def results(self):
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|        _____                            _          |--")
+        print("--|       |_   _|__  _   _ _ __ _ __   ___ (_)         |--")
+        print("--|         | |/ _ \| | | | '__| '_ \ / _ \| |         |--")
+        print("--|         | | (_) | |_| | |  | | | | (_) | |         |--")
+        print("--|        _|_|\___/ \__,_|_|  |_| |_|\___/|_|_        |--")
+        print("--|       |_   _|__ _ __ _ __ ___ (_)_ __   /_/        |--")
+        print("--|         | |/ _ \ '__| '_ ` _ \| | '_ \ / _ \       |--")
+        print("--|         | |  __/ |  | | | | | | | | | |  __/       |--")
+        print("--|         |_|\___|_|  |_| |_| |_|_|_| |_|\___|       |--")
+        print("--|                                                    |--")
+        print("----------------------------------------------------------")
+                                       
         tournoi = ModelRetrieveTournament().retrieve_tournament()
         inc_score = 1
-        print("--- Tournoi terminé ---")
-        print("Informations sur le tournoi :")
-        print()
-        print("Résultats du tournois :")
+        print("------------| Informations sur le tournoi : |-------------")
+        print("----------------------------------------------------------")
+        print("---------------| Résultats du tournois : |----------------")
+        print("")
         score_final = ModelRetrieveTournament().sorted_players()
         for i in score_final : 
             print(f"{inc_score} -  {i['Nom']} {i['Prenom']} au rang {i['Rang']} avec un score de {i['Score']}")
             inc_score += 1
         tournoi = ModelRetrieveTournament().retrieve_tournament()
+        print("")
+        print("----------------------------------------------------------")
+        input("---------| Appuyez sur 'entrée' pour continuer |----------")
+
+    @staticmethod
+    def cls():
+        os.system('cls' if os.name=='nt' else 'clear')
+
+
+class ClMenu:
+    def __init__(self) -> None:
+        self.cls()
+
+    def appliTitle(self):
+        print("---------------------------------------------------------------------------------------")
+        print(" _____ _                     _____                                                 _   ")
+        print("/  __ \ |                   |_   _|                                               | |  ")
+        print("| /  \/ |__   ___  ___ ___    | | ___  _   _ _ __ _ __   __ _ _ __ ___   ___ _ __ | |_ ")
+        print("| |   | '_ \ / _ \/ __/ __|   | |/ _ \| | | | '__| '_ \ / _` | '_ ` _ \ / _ \ '_ \| __|")
+        print("| \__/\ | | |  __/\__ \__ \   | | (_) | |_| | |  | | | | (_| | | | | | |  __/ | | | |_ ")
+        print(" \____/_| |_|\___||___/___/   \_/\___/ \__,_|_|  |_| |_|\__,_|_| |_| |_|\___|_| |_|\__|")
+        print("---------------------------------------------------------------------------------------")
+        print("-------------------- Bienvenu dans l'application Chess Tournament ---------------------")
+        print("---------------------------------------------------------------------------------------")
+
+    def cl_gui(self): 
+        print("")
+        print(" -------------------------------------------------")
+        print("| Souhaitez-vous utiliser l'interface graphique ? |")
+        print(" -------------------------------------------------")
+        print("| - 1 : Oui")
+        print("| - 2 : Non")
+        print("| - 3 : Quitter")
+        choix_gui = input("| - Votre choix : ")
+        self.cls()
+
+        return int(choix_gui)
+
+    def welcom(self):
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|       ____  _                                      |--")
+        print("--|      | __ )(_) ___ _ ____   _____ _ __  _   _      |--")
+        print("--|      |  _ \| |/ _ \ '_ \ \ / / _ \ '_ \| | | |     |--")
+        print("--|      | |_) | |  __/ | | \ V /  __/ | | | |_| |     |--")
+        print("--|      |____/|_|\___|_| |_|\_/ \___|_| |_|\__,_|     |--")
+        print("----------------------------------------------------------")
+        print("-------------------------| Menu |-------------------------")                                                   
+        print("----------------------------------------------------------")
+        print("| - 1 : Joueurs")
+        print("| - 2 : Tournoi")
+        print("| - 3 : Quitter")
+        choix_j_t = input("| - Votre choix : ")
+        self.cls()
+
+        return int(choix_j_t)
+
+    def player_menu(self):
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|            _                                       |--")
+        print("--|           | | ___  _   _  ___ _   _ _ __ ___       |--")
+        print("--|        _  | |/ _ \| | | |/ _ \ | | | '__/ __|      |--")
+        print("--|       | |_| | (_) | |_| |  __/ |_| | |  \__ \      |--")
+        print("--|        \___/ \___/ \__,_|\___|\__,_|_|  |___/      |--")                                                
+        print("----------------------------------------------------------")
+        print("--------------------- | Menu Joueurs |--------------------")                                                   
+        print("----------------------------------------------------------")
+        print("| - 1 : Ajouter un joueur")
+        print("| - 2 : Voir les joueurs existants")
+        print("| - 3 : Retour")
+        choix_j = input("| - Votre choix : ")    
+        self.cls()                                      
+        
+        return int(choix_j)
+
+    def tournamentMenu(self):
+        self.cls()
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|         _____                            _         |--")
+        print("--|        |_   _|__  _   _ _ __ _ __   ___ (_)        |--")
+        print("--|          | |/ _ \| | | | '__| '_ \ / _ \| |        |--")
+        print("--|          | | (_) | |_| | |  | | | | (_) | |        |--")
+        print("--|          |_|\___/ \__,_|_|  |_| |_|\___/|_|        |--")
+        print("----------------------------------------------------------")
+        print("---------------------| Menu Tournoi |---------------------")                                                   
+        print("----------------------------------------------------------")
+        print("| - 1 : Nouveau tournoi")
+        print("| - 2 : Reprendre le dernier tournoi")
+        print("| - 3 : Retour")
+        choix_t = input("| - Votre choix : ")   
+        self.cls()
+
+        return int(choix_t)  
+
+    def existing_tournament(self):
+        """
+        vue pour demander confirmation de créer un nouveau tournoi si tournoi existant
+        """
+        print("----------------------------------------------------------")
+        print("|   Un tournoi existant à été trouvé,                    |")
+        print("|   voulez-vous en commencer un nouveau quand même ?     |")
+        print("----------------------------------------------------------")
+        print("| - 1 : Oui")
+        print("| - 2 : Non")
+        choix_nm = input("| - Votre choix : ")
+
+        return int(choix_nm)  
+
+    def start_tournament(self):
+        self.cls()
+        print("-----------------------------------------------------------")
+        print("-----------------------------------------------------------")
+        print("-  ____                                                   -")
+        print("- / ___|___  _ __ ___  _ __ ___   ___ _ __   ___ ___ _ __ -")
+        print("-| |   / _ \| '_ ` _ \| '_ ` _ \ / _ \ '_ \ / __/ _ \ '__|-")
+        print("-| |__| (_) | | | | | | | | | | |  __/ | | | (_|  __/ |   -")
+        print("- \____\___/|_| |_| |_|_| |_| |_|\___|_| |_|\___\___|_|   -")
+        print("-                                                         -")
+        print("-----------------------------------------------------------")
+        input("----| Appuyer sur 'entrée' pour démarrer le tournoi. |-----")
+        self.cls()
+
+    def resume_tournament(self):
+        print("-----------------------------------------------------------")
+        print("-----------------------------------------------------------")
+        print("--|    ____                               _             |--")
+        print("--|   |  _ \ ___ _ __  _ __ ___ _ __   __| |_ __ ___    |--")
+        print("--|   | |_) / _ \ '_ \| '__/ _ \ '_ \ / _` | '__/ _ \   |--")
+        print("--|   |  _ <  __/ |_) | | |  __/ | | | (_| | | |  __/   |--")
+        print("--|   |_| \_\___| .__/|_|  \___|_| |_|\__,_|_|  \___|   |--")
+        print("--|             |_|                                     |--")
+        print("--|                                                     |--")
+        print("-----------------------------------------------------------")
+        input("----| Appuyer sur 'entrée' pour reprender le tournoi. |----")
+        self.cls()
+
+    def no_tournament(self):
+        print("-----------------------------------------------------------")
+        print("---------------| Pas de tournoi commencé |-----------------")
+        print("-----------------------------------------------------------")
+        input("----------| Appuyer sur 'entrée' pour continuer |----------")
+                                                                                
+
+    @staticmethod
+    def cls():
+        os.system('cls' if os.name=='nt' else 'clear')
 
 # --------------
 # ----- UX -----
@@ -113,7 +394,7 @@ class MainWindow(QMainWindow):
         self.close()
         
     @staticmethod
-    def goGui():
+    def goMainWindow():
         app = QApplication(sys.argv)#instantiate
 
         main_window = MainWindow()
@@ -151,6 +432,14 @@ class PlayersWindow(QMainWindow):
         self.mw = MainWindow()
         self.mw.show()
         self.close()
+
+    @staticmethod
+    def goPlayersWindow():
+        app = QApplication(sys.argv)#instantiate
+
+        main_window = PlayersWindow()
+
+        sys.exit(app.exec())#execute
         
 class AddPlayers(QMainWindow):
     def __init__(self):
