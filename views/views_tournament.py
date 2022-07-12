@@ -585,6 +585,7 @@ class NewTournament(QMainWindow):
         self.desc = self.findChild(QTextEdit, "tournament_description")
         self.btn_validation = self.findChild(QPushButton, "tournament_validation")
         self.btn_back = self.findChild(QPushButton, "back")
+        self.lbl_info = self.findChild(QLabel, "label_11")
 
         # Connecting to actions
         self.btn_players.clicked.connect(self.btnSelPlayers)
@@ -596,30 +597,39 @@ class NewTournament(QMainWindow):
         self.lplayer.show()
 
     def btnValidation(self):
-        id_players = self.player_to_db(self.lplayer.my_players)
+        validation = 1
+        
+        try: 
+            self.player_to_db(self.lplayer.my_players)
+        except AttributeError:
+            self.lbl_info.setText("Veuillez remplir tous les champs avant de valider")
+            validation = 0
 
-        if self.rbtn_blitz.isChecked() == True:
-            self.time = "Blitz"
-        elif self.rbtn_bullet.isChecked() == True:
-            self.time = "Bullet"
-        else:
-            self.time = "Coup rapide"
+        if validation == 1:
+            id_players = self.player_to_db(self.lplayer.my_players)
 
-        tournoi_infos = ModelWriteTournament(self.line_t_name.text(),
-                                      self.line_t_place.text(),
-                                      self.date_t_begin.text(),
-                                      int(self.sb_t_round.text()),
-                                      int(self.sb_t_ronde.text()),
-                                      id_players,
-                                      self.time,
-                                      self.desc.toPlainText()
-                                      )
+            if self.rbtn_blitz.isChecked() == True:
+                self.time = "Blitz"
+            elif self.rbtn_bullet.isChecked() == True:
+                self.time = "Bullet"
+            else:
+                self.time = "Coup rapide"
 
-        tournoi_infos.save_input_tournament_db_reg()
+            tournoi_infos = ModelWriteTournament(self.line_t_name.text(),
+                                        self.line_t_place.text(),
+                                        self.date_t_begin.text(),
+                                        int(self.sb_t_round.text()),
+                                        int(self.sb_t_ronde.text()),
+                                        id_players,
+                                        self.time,
+                                        self.desc.toPlainText()
+                                        )
 
-        self.bplayer = Begin()
-        self.bplayer.show()
-        self.close()
+            tournoi_infos.save_input_tournament_db_reg()
+
+            self.bplayer = Begin()
+            self.bplayer.show()
+            self.close()
          
 
     def btnBack(self):
@@ -651,10 +661,9 @@ class PlayerListSel(QMainWindow):
 
         #variables
         self.players = ModelRetrieveTournament().retrieve_all_player_from_db()
-
         self.element_true = 0
-
         self.my_players = {}
+
         for i in range(len(self.players)):
             self.my_players[i] = False
 
@@ -787,13 +796,17 @@ class QWRound(QMainWindow):
     # Connecting to actions
         self.btn_validate_round.clicked.connect(self.btnValidateRound)
 
+    def btnValidateRound(self):
+        pass
+
 
 class QWRoundEmpty(QMainWindow):
     def __init__(self):
         super(QWRoundEmpty,self).__init__()
 
     # Variables
-        self.rondes = ModelRetrieveTournament().retrieve_tournament()[2]["Rondes"]
+        self.rondes = ModelRetrieveTournament().retrieve_tournament()[0]["Rondes"]
+        self.my_players = ModelRetrieveTournament().retrieve_players_input_information()
 
     # Load the UI file
         uic.loadUi('./views/qt_ux/round_empty.ui', self)
@@ -804,4 +817,5 @@ class QWRoundEmpty(QMainWindow):
         for i in range(self.rondes):
                 print(i)
                 self.tab_match.addTab(QWRound(), f"Match {i+1}")
-                QWRound().lbl_player_1.setText(f"{self.element_true} éléments sélectionnés sur 8")
+                #QWRound().lbl_player_1.setText(f"{self.my_players}")
+                #QWRound().lbl_player_2.setText(f"{self.my_players}")

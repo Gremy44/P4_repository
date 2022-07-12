@@ -141,6 +141,7 @@ class ModelRetrieveTournament:
     def retrieve_players_input_information(self): 
         '''
         - Retourne liste joueur ordre input tournoi
+        - Format [[{...}],[{...}]...]
         '''
         self.ct = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
         self.ct.default_table_name = "Save_Input_Tournament"

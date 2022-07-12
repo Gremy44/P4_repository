@@ -316,8 +316,14 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton:checked { background-color:green }</string>
+        </property>
         <property name="text">
          <string>Valider le round</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
