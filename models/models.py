@@ -1,15 +1,18 @@
-import os
+import os, os.path
 import datetime
 from tinydb import TinyDB, where
 
-class AddPlayerModel:
+class PlayerModel:
     def __init__(self):
         pass
 
     def player_id(self):
-        return id(AddPlayerModel)
+        return id(PlayerModel)
 
     def player_db_reg(self, l_name, f_name, b_day, gender, rank): # enregistre les infos joueurs dans la base donnée
+        '''
+        Enregistre le joueur dans la db
+        '''
         # ----directory creation----
         try:
             os.makedirs("./chess_data_base/players_data_base")
@@ -28,8 +31,24 @@ class AddPlayerModel:
                         "Score" : 0.0}) 
 
         self.db.close()
+
+    def save_round_advance(self, players_infos:list, round:int):
+        db_save = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json") # obj creation and path
+        db_save.default_table_name = f"Round {str(round)}"  # table name
+        print("Round :", round)
+        for i in range(len(players_infos)):
+            #print("players infos", players_infos)
+            joueur_1_id    = players_infos[i][0]['id_player']
+            joueur_1_score = players_infos[i][0]['Score']
+            joueur_2_id    = players_infos[i][1]['id_player']
+            joueur_2_score = players_infos[i][1]['Score']
+            joueurs = [joueur_1_id, joueur_1_score, joueur_2_id, joueur_2_score]
+            print(f"Sauvegarde ronde {i+1} : ", joueurs)
+            db_save.insert({f"Ronde {i+1}" : joueurs})
+
+        db_save.close()
                         
-class ModelWriteTournament:
+class TournamentModel:
     def __init__(self, t_name = "", t_place = "", t_date = "", t_round = 4, t_ronde = 4, t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720, 2123311234976, 1988607754144, 1384106246048, 2187293245344], t_time = "", t_desc = ""):
         
         self.t_name    = t_name
@@ -41,10 +60,15 @@ class ModelWriteTournament:
         self.t_time    = t_time
         self.t_desc    = t_desc
 
+        self.id_round = 0
+
     def id_tournament(self):
-        return id(ModelWriteTournament)
+        return id(TournamentModel)
 
     def save_input_tournament_db_reg(self):
+        '''
+        Save tournament infos in db
+        '''
         # ----directory creation----
         try:
             os.makedirs("./chess_data_base/tounament/actual_tournament")
@@ -68,7 +92,7 @@ class ModelWriteTournament:
 
     def save_finished_tournament(self):
         '''
-        - déplace le fichier json du tournois terminé dans le dossier 'finished_tournament'
+        - move json file of the finished tournament in 'finished_tournament' forlder
         '''
         ct_id = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
         ct_id.default_table_name = "Save_Input_Tournament"
@@ -79,43 +103,25 @@ class ModelWriteTournament:
             os.makedirs("./chess_data_base/tounament/finished_tournaments")
         except FileExistsError:
             pass
-        os.rename("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json",f"./chess_data_base/tounament/finished_tournaments/tournament_{ct_id_ls[0]['id_tournament']}_infos.json")
+        path = "./chess_data_base/tounament/actual_tournament/save_tournament_infos.json"
+        path_replace = f"./chess_data_base/tounament/finished_tournaments/{ct_id_ls[0]['Name']}-{ct_id_ls[0]['id_tournament']}.json"
+        os.rename(path, path_replace.replace(" ", "_"))
 
-    def clear_tournament(self):
+    @staticmethod
+    def clear_tournament():
+        '''
+        delete the actual json file of tournament
+        '''
         file_path = "./chess_data_base/tounament/actual_tournament/save_tournament_infos.json"
         if os.path.isfile(file_path):
             os.remove(file_path)
         else:
-            "Pas de fichier à ce chemin"
+            "no file found at this path"
             pass
-        
-class ModelWritePlayer:
-    def __init__(self) -> None:
-        pass
-
-    def save_round_advance(self, players_infos, round):
-        db_save = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json") # obj creation and path
-        db_save.default_table_name = f"Round {str(round)}"  # table name
-        print("Round :", round)
-        for i in range(len(players_infos)):
-            #print("players infos", players_infos)
-            joueur_1_id    = players_infos[i][0]['id_player']
-            joueur_1_score = players_infos[i][0]['Score']
-            joueur_2_id    = players_infos[i][1]['id_player']
-            joueur_2_score = players_infos[i][1]['Score']
-            joueurs = [joueur_1_id, joueur_1_score, joueur_2_id, joueur_2_score]
-            print(f"Sauvegarde ronde {i+1} : ", joueurs)
-            db_save.insert({f"Ronde {i+1}" : joueurs})
-
-        db_save.close()
-
-class ModelRetrieveTournament:
-    def __init__(self):
-        self.id_round = 0
 
     def retrieve_tournament(self):
         '''
-        - retourne la liste avec les inforations du tournoi
+        - retourne la liste avec les informations du tournoi
         - format : [{key:value, key:value, ...}]
         '''
         current_tournament = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
@@ -246,6 +252,31 @@ class ModelRetrieveTournament:
             for n in i:
                 score_non_tri.append(n)
         score_tri = sorted(score_non_tri, key=lambda x:(x['Score'], x['Rang']), reverse=True)
-        return score_tri
+        return score_tri   
 
+class ReportModel:
+    def __init__(self) -> None:
+        self.db_players = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
+        self.path_finished_tournament = "./chess_data_base/tounament/finished_tournaments"
+
+    def nameFinishedTournament(self):
+        '''
+        Retourne une liste .json présents dans le repertoire 'finished_tournament'
+        '''
+        l_tournament = []
+
+        for i in os.listdir(self.path_finished_tournament):
+            db_tournament = f"./chess_data_base/tounament/finished_tournaments/{i}"
+            l_tournament.append(db_tournament)
+
+        return l_tournament
         
+    def sortPlayerInTournament(self):
+        l_joueurs_tournois = []
+
+        for i in self.nameFinishedTournament():
+            db_temp = TinyDB(i)
+            db_temp.default_table_name = "Save_Input_Tournament"
+            joueurs = db_temp.all()
+            l_joueurs_tournois.append(joueurs[0]['Players'])
+        return l_joueurs_tournois        

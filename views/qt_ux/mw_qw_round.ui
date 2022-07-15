@@ -223,6 +223,9 @@
               <pointsize>12</pointsize>
              </font>
             </property>
+            <property name="frame">
+             <bool>true</bool>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
