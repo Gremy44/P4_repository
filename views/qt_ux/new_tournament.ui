@@ -242,7 +242,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Tournées :</string>
+           <string>Instances rondes :</string>
           </property>
          </widget>
         </item>

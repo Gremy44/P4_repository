@@ -1,4 +1,5 @@
 from models.models import PlayerModel, TournamentModel, ReportModel
+import controllers.constants
 import sys
 import os
 
@@ -98,12 +99,15 @@ class AddPlayerViews:
 
 class TournamentViews:
     def __init__(self):
-        self.complete_result = []
         self.id_round_views = TournamentModel().id_round
+        self.complete_result = []
         self.t_players = []
 
+        self.id_player = PlayerModel()
+
     def ask_tounament_infos(self):
-        self.cls()
+        #self.cls()
+        print(TournamentModel().current_round())
         print("----------------------------------------------------------")
         print("----------------------------------------------------------")
         print("--|       _   _                                        |--")
@@ -119,11 +123,12 @@ class TournamentViews:
         print("----------- | Entrez les information tournois | ----------")
         print("----------------------------------------------------------")
                                           
-        self.t_name    = input(" | - Entrez nom : ")
-        self.t_place   = input(" | - Entrez lieu : ")
-        self.t_date    = input(" | - Entrez date : ")
-        self.t_round   = 4
-        self.t_rondes  = input(" | - Entrez instances rondes : ")
+        self.t_name             = input(" | - Entrez nom : ")
+        self.t_place            = input(" | - Entrez lieu : ")
+        self.t_date_start       = input(" | - Entrez date de début : ")
+        self.t_date_end         = input(" | - Entrez date de fin : ")
+        self.t_tours            = 4
+        self.t_instances_rondes = input(" | - Entrez instances rondes : ")
         print(" |   - Test : utiliser une liste déjà faite ?:")
         print(" | 1 - Utiliser liste déjà faite")
         print(" | 2 - Faire ma liste")
@@ -133,18 +138,22 @@ class TournamentViews:
                               2123311234976, 1988607754144, 1384106246048, 2187293245344]
         else:                      
             for i in range(8):
-                j_temp = input(f" | - Entrez l'ID joueur du joueur N°:{i+1} : ")
+                j_temp = input(f" | - Entrez le N° joueur du joueur N°:{i+1}/8 : ")
                 self.t_players.append(int(j_temp))
+            print(self.t_players)
+            self.t_players = self.id_player.retrievePlayerFromNumber(self.t_players)
+            print(self.t_players)
+            
         self.t_time    = input(" | - Bullet/Blitz/coup rapide : ")
         self.t_desc    = input(" | - Entrez description : ")
 
-        return self.t_name, self.t_place, self.t_date, self.t_round, self.t_rondes, self.t_players, self.t_time, self.t_desc
+        return self.t_name, self.t_place, self.t_date_start, self.t_date_end, self.t_tours, self.t_instances_rondes, self.t_players, self.t_time, self.t_desc
 
     def views_round_input(self, sorted_paires, ronde):
         '''
         - input pour les resulats de chaque round
         '''
-        self.cls()
+        #self.cls()
         print("----------------------------------------------------------")
         print("----------------------------------------------------------")
         print("--|             __  __       _       _                 |--")
@@ -287,13 +296,14 @@ class MenuViews:
         print("----------------------------------------------------------")
         print("| - 1 : Nouveau tournoi")
         print("| - 2 : Reprendre le dernier tournoi")
-        print("| - 3 : Retour")
+        print("| - 3 : Rapports de tournois")
+        print("| - 4 : Retour")
         choix_t = input("| - Votre choix : ")   
         self.cls()
 
         return int(choix_t)  
 
-    def Rapports(self):
+    def rapports(self):
         self.cls()
         print("----------------------------------------------------------")
         print("----------------------------------------------------------")
@@ -340,6 +350,8 @@ class MenuViews:
         return choix_rj
 
     def rapportTournois(self):
+        self.cls()
+        inc_1 = 1
         print("----------------------------------------------------------")
         print("----------------------------------------------------------")
         print("--|      ____                              _           |--")
@@ -352,15 +364,63 @@ class MenuViews:
         print("--|       | | (_) | |_| | |  | | | | (_) | \__ \       |--")
         print("--|       |_|\___/ \__,_|_|  |_| |_|\___/|_|___/       |--")
         print("----------------------------------------------------------")
-        print("------------------| Rapports Tournois |-------------------")
+        print("------------------| Liste des tournois |------------------")
         print("----------------------------------------------------------")                                   
-        print("| - 1 : Liste de tous les tournois")
+        liste_tournament = ReportModel().nameFinishedTournament()
+        for i in liste_tournament:
+            print(f"--| Tournois N°{inc_1} : ", i[49:-5])
+            inc_1 += 1
+        print("----------------------------------------------------------")
+        print("------------------| Liste des tournois |------------------") 
+        print("| - 1 : Liste de tous les matchs d'un tournoi")
         print("| - 2 : Liste de tous les tours d'un tournoi")
-        print("| - 3 : Liste de tous les matchs d'un tournoi")
-        print("| - 4 : Retour")
-        choix_rt = input("| - Votre choix : ")                  
-
-        return choix_rt            
+        print("| - 3 : Retour")
+        choix_rt = input("| - Votre choix : ")
+        choix_rt = int(choix_rt)
+        if choix_rt == 1:
+            print("----------------------------------------------------------")
+            print("-------------| Choisissez le N° du tournois |-------------")
+            self.choix_nb_tournament = input("N° de tournois : ")
+            return choix_rt, self.choix_nb_tournament
+        elif choix_rt == 2:
+            print("----------------------------------------------------------")
+            print("-------------| Choisissez le N° du tournois |-------------")
+            self.choix_nb_tournament = input("N° de tournois : ")
+            return choix_rt, self.choix_nb_tournament
+        return choix_rt, -1                                
+        
+    def tToursTournament(self):
+        self.cls()
+        infos_tournoi = ReportModel().finishedTournamentNb(self.choix_nb_tournament)
+        inc_01 = 0
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|        _     _     _             _                 |--")
+        print("--|       | |   (_)___| |_ ___    __| | ___  ___       |--")
+        print("--|       | |   | / __| __/ _ \  / _` |/ _ \/ __|      |--")
+        print("--|       | |___| \__ \ ||  __/ | (_| |  __/\__ \      |--")
+        print("--|       |_____|_|___/\__\___|  \__,_|\___||___/      |--")
+        print("--|       | |_ ___  _   _ _ __ ___                     |--")
+        print("--|       | __/ _ \| | | | '__/ __|                    |--")
+        print("--|       | || (_) | |_| | |  \__ \                    |--")
+        print("--|        \__\___/ \__,_|_|  |___/                    |--")
+        print("----------------------------------------------------------")
+        print("-----------------| Informations Tournoi |-----------------") 
+        print("-----------------------| Tour N°1 |-----------------------")                                            
+        print("--| Nom du tournoi : ", infos_tournoi[0][0])
+        print("--| Lieu du tournoi : ", infos_tournoi[0][1])
+        print("--| Début : ", infos_tournoi[0][2], " |---| Fin : ", infos_tournoi[0][3])
+        print("--| Tours : ", infos_tournoi[0][4], " |---| Rondes : ", infos_tournoi[0][5])
+        print("--| Gestion du temps : ", infos_tournoi[0][6])
+        print("------------------| Informations tours |------------------")
+        for i in range(infos_tournoi[0][5]):
+            ("----------------------------------------------------------")
+            print(f"-----------------------| Tour N°{i} |-----------------------")
+            for n in range(infos_tournoi[0][4]*2):
+                print(infos_tournoi[1][inc_01])
+                inc_01 += 1
+        print(infos_tournoi)
+        input("Appuyez sur 'Entrée' pour continuer")
 
     def existing_tournament(self):
         """

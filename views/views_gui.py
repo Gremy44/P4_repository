@@ -9,10 +9,8 @@ class ControllerGui(QMainWindow):
     def __init__(self) -> None:
         super(ControllerGui,self).__init__()
 
-
         self.tournoi_model      = TournamentModel()
         self.tournoi_player     = PlayerModel()
-
 
         self.list_players = self.tournoi_model.retrieve_players_input_information()
         self.list_player_other_round = self.tournoi_model.retrieve_round()
@@ -27,12 +25,7 @@ class ControllerGui(QMainWindow):
         tri_temp = []
         tri = []
         # tri par rang
-        tri_temp = sorted(self.list_players, key=lambda x: x[0]['Rang'])
-
-        # substract 1 level of array
-        for i in tri_temp:
-            for n in i:
-                tri.append(n)
+        tri = sorted(self.list_players, key=lambda x: x['Rang'])
 
         length_to_split = int(len(tri)/2) #determine le nombre de tour pour la boucle
 
@@ -50,11 +43,7 @@ class ControllerGui(QMainWindow):
         mes_paires_temp = []
         self.my_paires = []
 
-        for i in self.list_player_other_round:
-            for n in i:
-                tri_temp.append(n)
-
-        pair = sorted(tri_temp, key = lambda x : (x['Score'], x['Rang']))
+        pair = sorted(self.list_player_other_round, key = lambda x : (x['Score'], x['Rang']))
 
         mod = 0 
         for i in range(int(len(pair)/2)):
@@ -246,12 +235,14 @@ class Tournament(QMainWindow):
         # Define widgets
         self.btn_new_tournament = self.findChild(QPushButton, "new_tournament")
         self.btn_resume_tournament = self.findChild(QPushButton, "resume_tournament")
+        self.btn_reports = self.findChild(QPushButton, "reports")
         self.btn_back = self.findChild(QPushButton, "back")
         self.lbl_existing_t = self.findChild(QLabel, "label_2")
 
         # Connecting to actions
         self.btn_new_tournament.clicked.connect(self.btnNewT)
         self.btn_resume_tournament.clicked.connect(self.btnResumeT)
+        self.btn_back.clicked.connect(self.btnReports)
         self.btn_back.clicked.connect(self.btnBack)
 
         #Display message if there is an existing tournament
@@ -264,14 +255,24 @@ class Tournament(QMainWindow):
         self.close()
 
     def btnResumeT(self):
-        self.t_to_resume_tournament = QWRoundEmpty()
+        self.t_to_resume_tournament = Resume()
         self.t_to_resume_tournament.show()
-        self.close
+        self.close()
+
+    def btnReports(self):
+        self.t_to_report = Report()
+        self.t_to_report.show()
+        self.close()
 
     def btnBack(self):
         self.t_to_back_main = MainWindow()
         self.t_to_back_main.show()
         self.close()
+
+class Report(QMainWindow):
+    def __init__(self):
+        super(Report,self).__init__()
+        pass
 
 class NewTournament(QMainWindow):
     def __init__(self):
@@ -332,14 +333,15 @@ class NewTournament(QMainWindow):
                 self.time = "Coup rapide"
 
             tournoi_infos = TournamentModel(self.line_t_name.text(),
-                                        self.line_t_place.text(),
-                                        self.date_t_begin.text(),
-                                        int(self.sb_t_round.text()),
-                                        int(self.sb_t_ronde.text()),
-                                        id_players,
-                                        self.time,
-                                        self.desc.toPlainText()
-                                        )
+                                            self.line_t_place.text(),
+                                            self.date_t_begin.text(),
+                                            self.date_t_end.text(),
+                                            int(self.sb_t_round.text()),
+                                            int(self.sb_t_ronde.text()),
+                                            id_players,
+                                            self.time,
+                                            self.desc.toPlainText()
+                                            )
 
             tournoi_infos.save_input_tournament_db_reg()
 
@@ -407,8 +409,6 @@ class PlayerListSel(QMainWindow):
 
         for ix in deselected.indexes():
             b = ix.row()
-
-        #print(a, b)
 
         self.my_players[a]=True
         self.my_players[b]=False
@@ -483,7 +483,6 @@ class QWRound(QMainWindow):
         self.btn_validate_round.setCheckable(True)
         self.btn_validate_round.clicked.connect(self.btnValidateRound)
         
-
     def btnValidateRound(self):
         if self.btn_validate_round.isChecked(): 
             btn = True
@@ -504,33 +503,32 @@ class QWRoundEmpty(QMainWindow):
         self.players_models = PlayerModel()
         self.ctr_gui = ControllerGui()
 
-        self.rondes = self.tournament_models.retrieve_tournament()[0]["Rondes"]
-        self.rounds = self.tournament_models.retrieve_tournament()[0]["Round"]
+        self.rondes = self.tournament_models.retrieve_tournament()[0]["Instance_Rondes"]
+        self.rounds = self.tournament_models.retrieve_tournament()[0]["Match"]
         self.test_round = self.tournament_models.test_current_round()
         
         inc = 0
-
-    # Load the UI file
-        uic.loadUi('./views/qt_ux/round_empty.ui', self)
-
-    # Define Widgets
-
-        self.tab_match = self.findChild(QTabWidget, "tabWidget")
-        self.btn_validate_all_rondes = self.findChild(QPushButton, "pushButton_2")
-        self.lbl_warning = self.findChild(QLabel, "label")
-        
-    # Instancing interface
-    
         if self.ctr_gui.actual_round < self.rounds:
 
-            print("test round : ", self.ctr_gui.actual_round)
-            print("self round : ", self.rounds)
+        # Load the UI file
+            uic.loadUi('./views/qt_ux/round_empty.ui', self)
+
+        # Define Widgets
+
+            self.tab_match = self.findChild(QTabWidget, "tabWidget")
+            self.btn_validate_all_rondes = self.findChild(QPushButton, "pushButton_2")
+            self.lbl_warning = self.findChild(QLabel, "label")
+
+        # Connecting to actions
+            self.tab_match.currentChanged.connect(self.tabChanged)
+            self.btn_validate_all_rondes.clicked.connect(self.btnValidatAllRondes)
+            
+        # Instancing interface
 
             if self.test_round == False: # si pas de round
                 self.my_players = self.ctr_gui.pairing_first_round()
             else:
                 self.my_players = self.ctr_gui.pairing_other_round()
-                print(self.my_players)
 
             for i in range(self.rondes):
 
@@ -543,14 +541,11 @@ class QWRoundEmpty(QMainWindow):
 
                 inc += 2
         else:
-            print("finish")
-            self.close()
+            print("ici : ", self.ctr_gui.actual_round, " < ", self.rounds)
+            print("coucoufinish")
             self.t_to_finish = Results()
             self.t_to_finish.show()
-
-    # Connecting to actions
-        self.tab_match.currentChanged.connect(self.tabChanged)
-        self.btn_validate_all_rondes.clicked.connect(self.btnValidatAllRondes)
+            self.close()
 
     def tabChanged(self):
         ind = self.tab_match.currentIndex()
@@ -575,8 +570,8 @@ class QWRoundEmpty(QMainWindow):
                 self.my_players[i][0]['Score'] = self.my_players[i][0]['Score'] + float(score_p1)
                 self.my_players[i][1]['Score'] = self.my_players[i][1]['Score'] + float(score_p2)
 
-            self.players_models.save_round_advance(self.my_players, self.ctr_gui.actual_round+1)
-
+            self.tournament_models.save_round_advance(self.my_players, self.ctr_gui.actual_round+1)
+                
             self.t_to_round = QWRoundEmpty()
             self.t_to_round.show()
             self.close()
@@ -590,6 +585,11 @@ class Results(QMainWindow):
     def __init__(self):
         super(Results,self).__init__()
 
+    # Variables
+        self.tournament = TournamentModel()
+        self.tournament_infos = self.tournament.sorted_players()
+        print(self.tournament_infos)
+
     # Load the UI file
         uic.loadUi('./views/qt_ux/results.ui', self)
 
@@ -599,7 +599,41 @@ class Results(QMainWindow):
     # Connecting to actions
         self.btn_new_tournament.clicked.connect(self.btnFinish)
 
+    # result list
+        self.getData()
+
     def btnFinish(self):
+        self.tournament.save_finished_tournament()
         self.t_to_tournament = Tournament()
         self.t_to_tournament.show()
         self.close()
+
+    def getData(self): 
+        row = 0
+        self.tableWidget.setRowCount(len(self.tournament_infos))
+        for p in self.tournament_infos:
+            self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(p['Nom']))
+            self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(p['Prenom']))
+            self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(p['Rang']))
+            self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(str(p['Score'])))
+            row += 1
+
+class Resume(QMainWindow):
+    def __init__(self):
+        super(Resume,self).__init__()
+
+    # Load the UI file
+        uic.loadUi('./views/qt_ux/resume.ui', self)
+
+    # Define widgets
+        self.btn_new_tournament = self.findChild(QPushButton, "pushButton")
+
+    # Connecting to actions
+        self.btn_new_tournament.clicked.connect(self.btnResume)
+
+    def btnResume(self):
+        self.t_to_round = QWRoundEmpty()
+        self.t_to_round.show()
+        self.close()
+
+

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
-    <height>530</height>
+    <width>400</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,8 +43,11 @@
           <pointsize>22</pointsize>
          </font>
         </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
         <property name="text">
-         <string>Resultats</string>
+         <string>Prêt à reprendre le tournoi ?</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -52,28 +55,20 @@
        </widget>
       </item>
       <item>
-       <widget class="QTableWidget" name="tableWidget">
-        <column>
-         <property name="text">
-          <string>Nom</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Prenom</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Rang</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string> Score au tournoi</string>
-         </property>
-        </column>
-       </widget>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Minimum</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QPushButton" name="pushButton">
@@ -86,13 +81,29 @@
         <property name="font">
          <font>
           <family>Segoe UI Light</family>
-          <pointsize>18</pointsize>
+          <pointsize>16</pointsize>
          </font>
         </property>
         <property name="text">
-         <string>Terminer</string>
+         <string>JOUER</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Minimum</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </item>

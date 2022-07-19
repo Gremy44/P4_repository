@@ -1,5 +1,7 @@
 import os, os.path
+from os.path import exists
 import datetime
+from re import I
 from numpy import sort
 from tinydb import TinyDB, where
 
@@ -48,214 +50,18 @@ class PlayerModel:
             db_save.insert({f"Ronde {i+1}" : joueurs})
 
         db_save.close()
+
+    def retrievePlayerFromNumber(self, lst_number):
+        nb_player = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
+        nb_player.default_table_name = 'Players'
+
+        lst_id = []
+
+        for i in lst_number:
+            lst_id.append(nb_player.get(doc_id=i)['id_player'])
+
+        return lst_id
                         
-class TournamentModel:
-    def __init__(self, t_name = "", t_place = "", t_date_start = "",t_date_end = "",  t_round = 4, t_ronde = 4, t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720, 2123311234976, 1988607754144, 1384106246048, 2187293245344], t_time = "", t_desc = ""):
-        
-        self.t_name       = t_name
-        self.t_place      = t_place
-        self.t_date_start = t_date_start
-        self.t_date_end   = t_date_end
-        self.t_round      = t_round
-        self.t_ronde      = t_ronde
-        self.t_players    = t_players
-        self.t_time       = t_time
-        self.t_desc       = t_desc
-
-        self.id_round = 0
-
-    def id_tournament(self):
-        return id(TournamentModel)
-
-    def save_input_tournament_db_reg(self):
-        '''
-        Save tournament infos in db
-        '''
-        # ----directory creation----
-        try:
-            os.makedirs("./chess_data_base/tounament/actual_tournament")
-        except FileExistsError:
-            pass
-
-        # ----.json creation----
-        db_save = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json") # obj creation and path
-        db_save.default_table_name = "Save_Input_Tournament" # table name
-        db_save.insert({"id_tournament" : self.id_tournament(),
-                        "Name"          : self.t_name,
-                        "Place"         : self.t_place, 
-                        "Date_start"    : self.t_date_start,
-                        "Date_end"      : self.t_date_end,
-                        "Round"         : self.t_round,
-                        "Rondes"        : self.t_ronde, 
-                        "Players"       : self.t_players,
-                        "Time"          : self.t_time,
-                        "Description"   : self.t_desc})
-
-        db_save.close()
-
-    def save_finished_tournament(self):
-        '''
-        - move json file of the finished tournament in 'finished_tournament' forlder
-        '''
-        ct_id = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
-        ct_id.default_table_name = "Save_Input_Tournament"
-        ct_id_ls = ct_id.all()
-        ct_id.close()
-        # ----directory creation----
-        try:
-            os.makedirs("./chess_data_base/tounament/finished_tournaments")
-        except FileExistsError:
-            pass
-        path = "./chess_data_base/tounament/actual_tournament/save_tournament_infos.json"
-        path_replace = f"./chess_data_base/tounament/finished_tournaments/{ct_id_ls[0]['Name']}-{ct_id_ls[0]['id_tournament']}.json"
-        os.rename(path, path_replace.replace(" ", "_"))
-
-    @staticmethod
-    def clear_tournament():
-        '''
-        delete the actual json file of tournament
-        '''
-        file_path = "./chess_data_base/tounament/actual_tournament/save_tournament_infos.json"
-        if os.path.isfile(file_path):
-            os.remove(file_path)
-        else:
-            "no file found at this path"
-
-    def retrieve_tournament(self):
-        '''
-        - retourne la liste avec les informations du tournoi
-        - format : [{key:value, key:value, ...}]
-        '''
-        current_tournament = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
-        current_tournament.default_table_name = "Save_Input_Tournament"
-        tournament = current_tournament.all()
-
-        current_tournament.close()
-
-        return tournament
-    
-    def retrieve_all_player_from_db(self):
-        '''
-        - Retourne liste de tous les joueurs de la db
-        '''
-        ap = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
-        ap.default_table_name = "Players"
-        allplayers = ap.all()
-
-        ap.close()
-        
-        return allplayers
-
-    def retrieve_players_input_information(self): 
-        '''
-        - Retourne liste joueur ordre input tournoi
-        - Format [[{...}],[{...}]...]
-        '''
-        self.ct = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
-        self.ct.default_table_name = "Save_Input_Tournament"
-        self.current_tournament = self.ct.all()
-
-        #self.name   = self.current_tournament[0]['Name']
-        #self.place  = self.current_tournament[0]['Place']
-        #self.date   = self.current_tournament[0]['Date']
-        #self.round  = self.current_tournament[0]['Round']
-        #self.tourne = self.current_tournament[0]['Tourne']
-        player_ids  = self.current_tournament[0]['Players']
-        #self.time   = self.current_tournament[0]['Time']
-        #self.desc   = self.current_tournament[0]['Description']
-
-        # --- retrieve players deserializer ---
-
-        self.db = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
-        self.db.default_table_name = "Players"
-        self.players= []
-        for i in player_ids:
-            deSerialized_players = self.db.search(where('id_player') == i) 
-            self.players.append(deSerialized_players)
-
-        self.ct.close()
-        
-        return self.players
-
-    def current_round(self):
-        '''
-        Retourne le round actuel
-        '''
-        cr = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
-        tables_nb = len(cr.tables())-1
-
-        cr.close()
-        
-        return tables_nb
-
-    def test_current_tournament(self):
-        '''
-        - Retourne True si fichier infos tournoi existe
-        ''' 
-        path = "./chess_data_base/tounament/actual_tournament/save_tournament_infos.json" 
-        if os.path.exists(path):
-            return True
-        return False
-
-    def test_current_round(self): 
-        '''
-        - Retourne True si des rounds ont étés commencés
-        '''
-        round_db = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
-        tables = round_db.tables() # donne les tables dans le fichier
-        tables_nb = len(tables)
-        if tables_nb > 1:
-            return True
-        return False
-
-    def retrieve_round(self): 
-        ''' 
-        - Retourne une liste avec les joueurs et les scores au dernier round
-        - Format => [[{...}{...}][{...}{...}]...]
-        '''
-        compt_1 = 1
-        
-        rtt = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
-        tables_name = rtt.tables() # donne les tables dans le fichier
-        self.id_round = len(tables_name)
-        ma_table = rtt.table(f'Round {self.id_round-1}').all() # donne les infos de la dernière table
-
-        pdb = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
-        pdb.default_table_name = "Players"
-
-        player_ids = []
-        self.players = []
-
-        for i in ma_table:
-            #print("Table actuelle : ", i)
-            #deserialise les joueurs
-            deSerialized_players_1 = pdb.search(where('id_player') == i[f"Ronde {compt_1}"][0]) 
-            deSerialized_players_2 = pdb.search(where('id_player') == i[f"Ronde {compt_1}"][2])
-            #créé la liste des joueurs
-            player = [*deSerialized_players_1, *deSerialized_players_2]
-            #ajoute leur score actuel
-            player[0]['Score'] = i[f"Ronde {compt_1}"][1]
-            player[1]['Score'] = i[f"Ronde {compt_1}"][3]
-            player_ids.append(player)
-            compt_1 += 1
-
-        rtt.close()
-
-        return player_ids
-
-    def sorted_players(self):
-        '''
-        - Retourne la liste trié par score des joueurs
-        - Format => [{}{}...]
-        '''
-        score_non_tri = []
-        score_final = self.retrieve_round()
-        for i in score_final:
-            for n in i:
-                score_non_tri.append(n)
-        score_tri = sorted(score_non_tri, key=lambda x:(x['Score'], x['Rang']), reverse=True)
-        return score_tri   
-
 class ReportModel:
     def __init__(self) -> None:
         self.db_players = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
@@ -323,7 +129,7 @@ class ReportModel:
         Return all result from a tournament 
         '''
 
-        tournament_path = './chess_data_base/tounament/finished_tournaments/tournament_2936352514832_infos.json'
+        #tournament_path = './chess_data_base/tounament/finished_tournaments/tournament_2936352514832_infos.json'
 
         tables = []
 
@@ -351,7 +157,60 @@ class ReportModel:
             l_tournament.append(db_tournament)
 
         return l_tournament
+
+    def finishedTournamentNb(self, number):
+        '''
+        - Return all informations of tournament select by number
+        - Return 3 lists
+        - Format : ([infos,tournament,...],[{'Rondes n:[[[...,...][...,...]]]},{}],[[{infos : player}],[{}]])
+        '''
+        pdb = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
+        pdb.default_table_name = 'Players'
+
+        inc_01 = 1
+        inc_02 = 0
+
+        lst_tournament = self.nameFinishedTournament()
+
+        selct_path = lst_tournament[int(number)-1]
+
+        list_score_player = []
+        list_score_player_name = []
+
+    # tournement infos
+        finish_infos = TinyDB(selct_path)
+        finish_infos.default_table_name = "Save_Input_Tournament"
+        infos = finish_infos.all()
+
+    # tournee infos
+        finish_infos.default_table_name = "Tournees"
+        infos_match = finish_infos.all()
+
+        for i in infos_match:
+            coucou = i[f'Ronde {inc_01}']
+            for n in coucou:
+                for e in n:
+                    list_score_player.append(e)
+            inc_01 += 1
         
+        for i in list_score_player:
+            
+            list_score_player_name.append(pdb.search(where('id_player') == i[0]))
+            
+            list_score_player_name[inc_02][0]['Score'] = 0.0
+            list_score_player_name[inc_02][0]['Score'] = i[1]
+            #print("i", i[1], " ---- ", "ID ", list_score_player_name[inc_02][0]['id_player'], " --- Score ", list_score_player_name[inc_02][0]['Score'])
+            inc_02 += 1
+        #print(list_score_player_name)
+                
+        return [infos[0]['Name'],
+                infos[0]['Place'],
+                infos[0]['Date_start'],
+                infos[0]['Date_end'],
+                infos[0]['Match'],
+                infos[0]['Instance_Rondes'],
+                infos[0]['Time']], list_score_player_name
+
     def allPlayerOfAllPassedTournament(self):
         '''
         Retourne la liste complète d'id joueur ayant participé aux tournois
@@ -390,22 +249,15 @@ class ReportModel:
 
         return deSerialized_players_1 
 
-class TournamentModel2:
+class TournamentModel:
     def __init__(self, 
                  t_name = "", 
                  t_place = "", 
                  t_date_start = "", 
                  t_date_end = "",  
-                 t_tour = 4, 
-                 t_instance_ronde = 4, 
-                 t_players = [3042972155808, 
-                              2520259116960, 
-                              2835596394400, 
-                              2498757410720, 
-                              2123311234976, 
-                              1988607754144, 
-                              1384106246048, 
-                              2187293245344], 
+                 t_tour = 0, 
+                 t_instance_ronde = 0, 
+                 t_players = [], 
                  t_time = "", 
                  t_desc = ""):
         
@@ -419,10 +271,7 @@ class TournamentModel2:
         self.t_time           = t_time
         self.t_desc           = t_desc
 
-        self.id_round = 0
-
-        self.tournament_infos_from_db = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
-        self.players_infos_from_db = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
+        self.id_round = 1
 
     def id_tournament(self):
         '''
@@ -441,7 +290,7 @@ class TournamentModel2:
             pass
 
         # .json creation
-        db_save = self.tournament_infos_from_db
+        db_save = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
         db_save.default_table_name = "Save_Input_Tournament" # table name
 
         db_save.insert({"id_tournament"  : self.id_tournament(),
@@ -450,18 +299,16 @@ class TournamentModel2:
                         "Date_start"     : self.t_date_start,
                         "Date_end"       : self.t_date_end,
                         "Match"          : self.t_tour,
-                        "Instance_Rondes": self.t_instance_ronde, 
+                        "Instance_Rondes": int(self.t_instance_ronde), 
                         "Players"        : self.t_players,
                         "Time"           : self.t_time,
                         "Description"    : self.t_desc})
-
-        db_save.close()
 
     def save_round_advance(self, players_infos:list, instance_ronde:int):
         '''
         Save ronde in db
         '''
-        db_save = self.tournament_infos_from_db
+        db_save = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
         db_save.default_table_name = "Tournees" # table name
 
         lst_tour = []
@@ -469,7 +316,6 @@ class TournamentModel2:
         print("Round :", instance_ronde)
 
         for i in range(len(players_infos)):
-            #print("players infos", players_infos)
             joueur_1_id    = players_infos[i][0]['id_player']
             joueur_1_score = players_infos[i][0]['Score']
             joueur_2_id    = players_infos[i][1]['id_player']
@@ -486,7 +332,7 @@ class TournamentModel2:
         '''
         - move json file of the finished tournament in 'finished_tournament' forlder
         '''
-        ct_id = self.tournament_infos_from_db
+        ct_id = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
         ct_id.default_table_name = "Save_Input_Tournament"
         ct_id_ls = ct_id.all()
         ct_id.close()
@@ -518,7 +364,7 @@ class TournamentModel2:
         - return the information's list of tournament
         - format : [{key:value, key:value, ...}]
         '''
-        current_tournament = self.tournament_infos_from_db
+        current_tournament = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
         current_tournament.default_table_name = "Save_Input_Tournament"
         tournament = current_tournament.all()
 
@@ -531,28 +377,38 @@ class TournamentModel2:
         - Return a list with players and score at the last round
         - Format => [{...}{...}{...}...]
         '''
-        rtt = self.tournament_infos_from_db
-        rtt.default_table_name = "Tournees"
-
-        match = rtt.all()
-        match = match[self.current_round()-1]
-        
-        pdb = self.players_infos_from_db
-        pdb.default_table_name = "Players"
-
         player_ids = []
 
-        for i in match.values():
-            for n in i:
-                for j in n:
-                    # deserialize
-                    player = pdb.search(where('id_player') == j[0]) 
-                    
-                    # change score
-                    player[0]['Score'] = j[1]
+        rtt = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
 
-                    # make new list of player with new score
-                    player_ids.append(*player)
+        if self.current_round() == 0:
+
+            match = self.retrieve_players_input_information()
+
+            # match ormat => [{...}{...}{...}...]
+            return match
+
+        else:
+            rtt.default_table_name = "Tournees"
+            match = rtt.all()
+            match = match[self.current_round()-1][f'Ronde {self.current_round()}']
+
+        pdb = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
+        pdb.default_table_name = "Players"
+        
+        for n in match:
+            for j in n:
+                    
+                # deserialize
+                player = pdb.search(where('id_player') == j[0]) 
+                        
+                # change score
+                player[0]['Score'] = j[1]
+
+                # make new list of player with new score
+                player_ids.append(*player)
+
+        rtt.close()
 
         return player_ids
 
@@ -560,7 +416,7 @@ class TournamentModel2:
         '''
         - Retlist of all players from db
         '''
-        ap = self.players_infos_from_db
+        ap = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
         ap.default_table_name = "Players"
         allplayers = ap.all()
 
@@ -571,9 +427,10 @@ class TournamentModel2:
     def retrieve_players_input_information(self): 
         '''
         - Return list of players input from the views
-        - Format [{...},{...}...]
+        - format input [...,...]
+        - Format output [{...},{...}...] 
         '''
-        self.ct = self.tournament_infos_from_db
+        self.ct = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
         self.ct.default_table_name = "Save_Input_Tournament"
 
         self.current_tournament = self.ct.all()
@@ -595,12 +452,25 @@ class TournamentModel2:
         
         return self.players
 
+    def sorted_players(self):
+        '''
+        - Return sorted list by score
+        - Format => [{}{}...]
+        '''
+        score_final = self.retrieve_round()
+                
+        score_tri = sorted(score_final, key=lambda x:(x['Score'], x['Rang']), reverse=True)
+
+        return score_tri   
+
     def current_round(self):
         '''
         Return the actual round
         '''
-        cr = self.tournament_infos_from_db
-        tables_nb = len(cr.tables())-1
+        cr = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
+        cr.default_table_name = 'Tournees'
+
+        tables_nb = len(cr.all())
 
         cr.close()
         
@@ -617,11 +487,17 @@ class TournamentModel2:
 
     def test_current_round(self): 
         '''
-        - Return True if there a round begun
+        - Return True if there is a round begun
         '''
-        round_db = self.tournament_infos_from_db
-        tables = round_db.tables() # donne les tables dans le fichier
+        round_db = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
+        tables = round_db.tables() 
         tables_nb = len(tables)
+
+        round_db.close()
+
         if tables_nb > 1:
             return True
         return False
+
+coucou = ReportModel()
+print(coucou.finishedTournamentNb(3))
