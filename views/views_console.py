@@ -415,11 +415,10 @@ class MenuViews:
         print("------------------| Informations tours |------------------")
         for i in range(infos_tournoi[0][5]):
             ("----------------------------------------------------------")
-            print(f"-----------------------| Tour N°{i} |-----------------------")
+            print(f"-----------------------| Tour N°{i+1} |-----------------------")
             for n in range(infos_tournoi[0][4]*2):
                 print(infos_tournoi[1][inc_01])
                 inc_01 += 1
-        print(infos_tournoi)
         input("Appuyez sur 'Entrée' pour continuer")
 
     def existing_tournament(self):

@@ -167,15 +167,12 @@ class ReportModel:
         pdb = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
         pdb.default_table_name = 'Players'
 
-        inc_01 = 1
-        inc_02 = 0
-
         lst_tournament = self.nameFinishedTournament()
-
+        
         selct_path = lst_tournament[int(number)-1]
 
-        list_score_player = []
-        list_score_player_name = []
+        lst_id_score = []
+        lst_complete = []
 
     # tournement infos
         finish_infos = TinyDB(selct_path)
@@ -186,30 +183,28 @@ class ReportModel:
         finish_infos.default_table_name = "Tournees"
         infos_match = finish_infos.all()
 
-        for i in infos_match:
-            coucou = i[f'Ronde {inc_01}']
-            for n in coucou:
-                for e in n:
-                    list_score_player.append(e)
-            inc_01 += 1
         
-        for i in list_score_player:
+        for i in infos_match:
+            for n in i.values():
+                for k in n:
+                    for t in k:
+                        print(t)
+
+        for findplayer in lst_id_score:
+            player = pdb.search(where('id_player') == findplayer[0])
+            player[0]['Score'] = findplayer[1]
+            lst_complete.append(player)
             
-            list_score_player_name.append(pdb.search(where('id_player') == i[0]))
-            
-            list_score_player_name[inc_02][0]['Score'] = 0.0
-            list_score_player_name[inc_02][0]['Score'] = i[1]
-            #print("i", i[1], " ---- ", "ID ", list_score_player_name[inc_02][0]['id_player'], " --- Score ", list_score_player_name[inc_02][0]['Score'])
-            inc_02 += 1
-        #print(list_score_player_name)
-                
+        print("-------------------------------------------")
+        print(lst_complete)
+
         return [infos[0]['Name'],
                 infos[0]['Place'],
                 infos[0]['Date_start'],
                 infos[0]['Date_end'],
                 infos[0]['Match'],
                 infos[0]['Instance_Rondes'],
-                infos[0]['Time']], list_score_player_name
+                infos[0]['Time']]
 
     def allPlayerOfAllPassedTournament(self):
         '''
@@ -500,4 +495,5 @@ class TournamentModel:
         return False
 
 coucou = ReportModel()
-print(coucou.finishedTournamentNb(3))
+salut = coucou.finishedTournamentNb(2)
+print(salut)
