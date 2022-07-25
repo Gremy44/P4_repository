@@ -1,3 +1,4 @@
+from numpy import byte
 from models.models import PlayerModel, TournamentModel, ReportModel
 import controllers.constants
 import sys
@@ -34,6 +35,7 @@ class AddPlayerViews:
         self.b_day  = input(" | - Date d'anniversaire (jj/mm/aaaa): ")
         self.gender = input(" | - Genre (H/F/N) : ")
         self.rank   = input(" | - Rang : ")
+        self.rank = str("{:04d}".format(int(self.rank)))
     
         print(" -------------------------------------------------------- ")
         print("|Valider les informations et ajouter à la base de données|")
@@ -245,6 +247,7 @@ class MenuViews:
         return int(choix_gui)
 
     def welcom(self):
+        self.cls()
         print("----------------------------------------------------------")
         print("----------------------------------------------------------")
         print("--|       ____  _                                      |--")
@@ -342,12 +345,206 @@ class MenuViews:
         print("----------------------------------------------------------")                                   
         print("| - 1 : Tous les joueurs par ordre alphabétique")
         print("| - 2 : Tous les joueurs par classement")
-        print("| - 3 : Tous les joueurs d'un tournoi par ordre alphabétique")
-        print("| - 4 : Tous les joueurs d'un tournoi par classement")
-        print("| - 5 : Retour")
+        print("| - 3 : Infos joueurs sur un tournois")
+        print("| - 4 : Retour")
         choix_rj = input("| - Votre choix : ")
 
-        return choix_rj
+        return int(choix_rj)
+
+    def pAllPlayersAlphabetic(self):
+        apa = ReportModel()
+        inc_01 = 1
+        self.cls()
+        print("-----------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------")
+        print("--|      _                                                          |--")
+        print("--|     | | ___  _   _  ___ _   _ _ __ ___                          |--")
+        print("--|  _  | |/ _ \| | | |/ _ \ | | | '__/ __|                         |--")
+        print("--| | |_| | (_) | |_| |  __/ |_| | |  \__ \                         |--")
+        print("--|  \___/ \___/ \__,_|\___|\__,_|_|  |___/ _   _                   |--")
+        print("--|    / \  | |_ __ | |__   __ _| |__   /_/| |_(_) __ _ _   _  ___  |--")
+        print("--|   / _ \ | | '_ \| '_ \ / _` | '_ \ / _ \ __| |/ _` | | | |/ _ \ |--")
+        print("--|  / ___ \| | |_) | | | | (_| | |_) |  __/ |_| | (_| | |_| |  __/ |--")
+        print("--| /_/   \_\_| .__/|_| |_|\__,_|_.__/ \___|\__|_|\__, |\__,_|\___| |--")
+        print("--|           |_|                                    |_|            |--")
+        print("-----------------------------------------------------------------------")
+        print("------------------| Joueurs par ordre alphabétique |-------------------")
+        amp = apa.allPlayerAlphabeticSort()
+        for i in amp:
+            print("--|")
+            print(f"----------------------------| Joueur N°{inc_01} |-----------------------------")
+            print("--| Nom : ", i['Nom'])
+            print("--| Prénom : ", i['Prenom'])
+            print("--| Date de naissance : ", i['Date de naissance'])
+            if i['Genre'] == 'H':
+                print("--| Genre : Homme")
+            elif i['Genre'] == 'F':
+                print("--| Genre : Femme")
+            else:
+                print("--| Genre : Neutre")
+            print("--| Rang : ", i['Rang'])
+            inc_01 += 1
+        print("")
+        input("Appuyez sur 'Entrée' pour continuer")
+
+    def pAllPlayersClassment(self):
+        self.cls()
+        inc_01 = 1
+        apc = ReportModel()
+        print("-----------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------")
+        print("--|            _                                                    |--")
+        print("--|           | | ___  _   _  ___ _   _ _ __ ___                    |--")
+        print("--|        _  | |/ _ \| | | |/ _ \ | | | '__/ __|                   |--")
+        print("--|       | |_| | (_) | |_| |  __/ |_| | |  \__ \                   |--")
+        print("--|        \___/ \___/ \__,_|\___|\__,_|_|  |___/          _        |--")
+        print("--|        / ___| | __ _ ___ ___  ___ _ __ ___   ___ _ __ | |_      |--")
+        print("--|       | |   | |/ _` / __/ __|/ _ \ '_ ` _ \ / _ \ '_ \| __|     |--")
+        print("--|       | |___| | (_| \__ \__ \  __/ | | | | |  __/ | | | |_      |--")
+        print("--|        \____|_|\__,_|___/___/\___|_| |_| |_|\___|_| |_|\__|     |--")
+        print("-----------------------------------------------------------------------")
+        print("------------------| Joueurs par ordre de classement |------------------")
+        amp = apc.allPlayerScoreSort()
+        for i in amp:
+            print("--|")
+            print(f"----------------------------| Joueur N°{inc_01} |-----------------------------")
+            print("--| Nom : ", i['Nom'])
+            print("--| Prénom : ", i['Prenom'])
+            print("--| Date de naissance : ", i['Date de naissance'])
+            if i['Genre'] == 'H':
+                print("--| Genre : Homme")
+            elif i['Genre'] == 'F':
+                print("--| Genre : Femme")
+            else:
+                print("--| Genre : Neutre")
+            print("--| Classement : ", i['Rang'])
+            inc_01 += 1
+        print("")
+        input("Appuyez sur 'Entrée' pour continuer")
+
+    def pPlayerTournament(self):
+        self.cls()
+        inc_1 = 1
+        print("-----------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------")
+        print("--|         _                                                       |--")
+        print("--|        | | ___  _   _  ___ _   _ _ __ ___   _ __   __ _ _ __    |--")
+        print("--|     _  | |/ _ \| | | |/ _ \ | | | '__/ __| | '_ \ / _` | '__|   |--")
+        print("--|    | |_| | (_) | |_| |  __/ |_| | |  \__ \ | |_) | (_| | |      |--")
+        print("--|     \___/ \___/ \__,_|\___|\__,_|_|  |___/ | .__/ \__,_|_|      |--")
+        print("--|    |_   _|__  _   _ _ __ _ __   ___ (_)___ |_|                  |--")
+        print("--|      | |/ _ \| | | | '__| '_ \ / _ \| / __|                     |--")
+        print("--|      | | (_) | |_| | |  | | | | (_) | \__ \                     |--")
+        print("--|      |_|\___/ \__,_|_|  |_| |_|\___/|_|___/                     |--")
+        print("-----------------------------------------------------------------------")
+        print("--------------| Classement des joueurs dans un tournoi |---------------")
+        print("-----------------------------------------------------------------------")
+        print("------------------------| Liste des tournois |-------------------------")
+        print("-----------------------------------------------------------------------")     
+
+        liste_tournament = ReportModel().nameFinishedTournament()
+
+        for i in liste_tournament:
+            print(f"--| Tournois N°{inc_1} : ", i[49:-5])
+            inc_1 += 1
+
+        print("-----------------------------------------------------------------------")
+        print("--------------------------| Liste des choix |--------------------------") 
+        print("| - 1 : Classement des joueurs par ordre alphabétique d'un tournoi")
+        print("| - 2 : Classement des joueurs par score d'un tournoi")
+        print("| - 3 : Retour")
+
+        choix_rp = input("| - Votre choix : ")
+        choix_rp = int(choix_rp)
+
+        if choix_rp == 1:
+            print("----------------------------------------------------------")
+            print("-------------| Choisissez le N° du tournois |-------------")
+            self.choix_nb_player = input("N° de tournois : ")
+            return int(choix_rp), self.choix_nb_player
+        elif choix_rp == 2:
+            print("----------------------------------------------------------")
+            print("-------------| Choisissez le N° du tournois |-------------")
+            self.choix_nb_player = input("N° de tournois : ")
+            return int(choix_rp), self.choix_nb_player
+        return int(choix_rp), -1                 
+                                                           
+    def pTournamentAlphabetic(self):
+        self.cls()
+        infos_tournoi = ReportModel().finishedTournamentNb(self.choix_nb_player)
+        inc_01 = 0
+        print("-----------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------")
+        print("--|      _                                                          |--")
+        print("--|     | | ___  _   _  ___ _   _ _ __ ___                          |--")
+        print("--|  _  | |/ _ \| | | |/ _ \ | | | '__/ __|                         |--")
+        print("--| | |_| | (_) | |_| |  __/ |_| | |  \__ \                         |--")
+        print("--|  \___/ \___/ \__,_|\___|\__,_|_|  |___/ _   _                   |--")
+        print("--|    / \  | |_ __ | |__   __ _| |__   /_/| |_(_) __ _ _   _  ___  |--")
+        print("--|   / _ \ | | '_ \| '_ \ / _` | '_ \ / _ \ __| |/ _` | | | |/ _ \ |--")
+        print("--|  / ___ \| | |_) | | | | (_| | |_) |  __/ |_| | (_| | |_| |  __/ |--")
+        print("--| /_/   \_\_| .__/|_| |_|\__,_|_.__/ \___|\__|_|\__, |\__,_|\___| |--")
+        print("--|           |_|                                    |_|            |--")
+        print("-----------------------------------------------------------------------")
+        print("------------------| Joueurs par ordre alphabétique |-------------------")
+        print("------------------------| dans un le tournoi |-------------------------")
+        print("--|")
+        print("--| Nom du tournoi : ", infos_tournoi[0][0])
+        print("--| Lieu du tournoi : ", infos_tournoi[0][1])
+        print("--| Début : ",infos_tournoi[0][2], " |---| Fin : ", infos_tournoi[0][3])
+        print("--| Tours : ", infos_tournoi[0][4], " |---| Rondes : ", infos_tournoi[0][5])
+        print("--| Gestion du temps : ", infos_tournoi[0][6])
+        print("--|")
+        print("------------------------------| Joueurs |------------------------------")
+        print("--|")
+
+        players = []
+        players = infos_tournoi[1][-8:]
+        players = sorted(players)
+        
+        for i in players:
+            print(f"--| {i[1]} {players[0][0]} au rang {i[4]} avec un score de {i[5]}")
+
+        print("--|")  
+        input("--| Appuyez sur 'Entrée' pour continuer")
+
+    def pTournamentScore(self):
+        self.cls()
+        infos_tournoi = ReportModel().finishedTournamentNb(self.choix_nb_player)
+        inc_01 = 1
+        print("-----------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------")
+        print("--|            _                                                    |--")
+        print("--|           | | ___  _   _  ___ _   _ _ __ ___                    |--")
+        print("--|        _  | |/ _ \| | | |/ _ \ | | | '__/ __|                   |--")
+        print("--|       | |_| | (_) | |_| |  __/ |_| | |  \__ \                   |--")
+        print("--|        \___/ \___/ \__,_|\___|\__,_|_|  |___/          _        |--")
+        print("--|        / ___| | __ _ ___ ___  ___ _ __ ___   ___ _ __ | |_      |--")
+        print("--|       | |   | |/ _` / __/ __|/ _ \ '_ ` _ \ / _ \ '_ \| __|     |--")
+        print("--|       | |___| | (_| \__ \__ \  __/ | | | | |  __/ | | | |_      |--")
+        print("--|        \____|_|\__,_|___/___/\___|_| |_| |_|\___|_| |_|\__|     |--")
+        print("-----------------------------------------------------------------------")
+        print("------------------| Joueurs par ordre de classement |------------------")
+        print("------------------------| dans un le tournoi |-------------------------")
+        print("--|")
+        print("--| Nom du tournoi : ", infos_tournoi[0][0])
+        print("--| Lieu du tournoi : ", infos_tournoi[0][1])
+        print("--| Début : ",infos_tournoi[0][2], " |---| Fin : ", infos_tournoi[0][3])
+        print("--| Tours : ", infos_tournoi[0][4], " |---| Rondes : ", infos_tournoi[0][5])
+        print("--| Gestion du temps : ", infos_tournoi[0][6])
+        print("--|")
+        print("------------------------------| Joueurs |------------------------------")
+        print("--|")
+        players = []
+        players = infos_tournoi[1][-8:]
+        players = sorted(players, key=lambda x: x[5], reverse=True)
+
+        for i in players:
+            print(f"--| N°{inc_01} : {i[1]} {players[0][0]} au rang {i[4]} avec un score de {i[5]}")
+            inc_01 += 1
+
+        print("--|")  
+        input("--| Appuyez sur 'Entrée' pour continuer")
 
     def rapportTournois(self):
         self.cls()
@@ -371,7 +568,7 @@ class MenuViews:
             print(f"--| Tournois N°{inc_1} : ", i[49:-5])
             inc_1 += 1
         print("----------------------------------------------------------")
-        print("------------------| Liste des tournois |------------------") 
+        print("-------------------| Liste des choix |--------------------") 
         print("| - 1 : Liste de tous les matchs d'un tournoi")
         print("| - 2 : Liste de tous les tours d'un tournoi")
         print("| - 3 : Retour")
@@ -406,7 +603,7 @@ class MenuViews:
         print("--|        \__\___/ \__,_|_|  |___/                    |--")
         print("----------------------------------------------------------")
         print("-----------------| Informations Tournoi |-----------------") 
-        print("-----------------------| Tour N°1 |-----------------------")                                            
+        print("----------------------------------------------------------")                                            
         print("--| Nom du tournoi : ", infos_tournoi[0][0])
         print("--| Lieu du tournoi : ", infos_tournoi[0][1])
         print("--| Début : ", infos_tournoi[0][2], " |---| Fin : ", infos_tournoi[0][3])
@@ -417,9 +614,48 @@ class MenuViews:
             ("----------------------------------------------------------")
             print(f"-----------------------| Tour N°{i+1} |-----------------------")
             for n in range(infos_tournoi[0][4]*2):
-                print(infos_tournoi[1][inc_01])
+                print("--|", infos_tournoi[1][inc_01][1], '', infos_tournoi[1][inc_01][0], 
+                      " avec un score de ", infos_tournoi[1][inc_01][5])
                 inc_01 += 1
         input("Appuyez sur 'Entrée' pour continuer")
+
+    def tMatchTournament(self):
+        self.cls()
+        infos_tournoi = ReportModel().finishedTournamentNb(self.choix_nb_tournament)
+        inc_01 = 1
+        inc_02 = 0
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|       _     _     _             _                  |--")
+        print("--|      | |   (_)___| |_ ___    __| | ___  ___        |--")
+        print("--|      | |   | / __| __/ _ \  / _` |/ _ \/ __|       |--")
+        print("--|      | |___| \__ \ ||  __/ | (_| |  __/\__ \       |--")
+        print("--|      |_____|_|___/\__\___| _\__,_|\___||___/       |--")
+        print("--|      |  \/  | __ _| |_ ___| |__  ___               |--")
+        print("--|      | |\/| |/ _` | __/ __| '_ \/ __|              |--")
+        print("--|      | |  | | (_| | || (__| | | \__ \              |--")
+        print("--|      |_|  |_|\__,_|\__\___|_| |_|___/              |--")
+        print("----------------------------------------------------------")
+        print("-----------------| Informations Tournoi |-----------------")
+        print("--|")
+        print("--| Nom du tournoi : ", infos_tournoi[0][0])
+        print("--| Lieu du tournoi : ", infos_tournoi[0][1])
+        print("--| Début : ", infos_tournoi[0][2], " |---| Fin : ", infos_tournoi[0][3])
+        print("--| Tours : ", infos_tournoi[0][4], " |---| Rondes : ", infos_tournoi[0][5])
+        print("--| Gestion du temps : ", infos_tournoi[0][6])
+        print("--|")
+        print("------------------| Informations matchs |-----------------")   
+        for i in range(infos_tournoi[0][5]):
+            print("----------------------------------------------------------")
+            print(f"-----------------------| Tour N°{i+1} |-----------------------") 
+            print("----------------------------------------------------------") 
+            for n in range(infos_tournoi[0][4]):
+                print(f"--| Match N°{inc_01} : ", infos_tournoi[1][inc_02][1], infos_tournoi[1][inc_02][0],
+                       " --- VS --- ", infos_tournoi[1][inc_02+1][1], infos_tournoi[1][inc_02+1][0]) 
+                inc_01 += 1
+                inc_02 += 2
+            print("--|")
+        input("Appuyez sur 'Entrée' pour continuer")                              
 
     def existing_tournament(self):
         """

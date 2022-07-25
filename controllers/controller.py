@@ -21,26 +21,6 @@ class AddPlayerController:
                                        add_player_view[4])
 
 class TournamentController:
-    ''' Déroulé d'un nouveau tournoi : 
-    - demande les infos tournois
-    - stock les infos tournois dans la db 'save_tournement_infos.json'
-    --- pret pour commencer le premier round ---
-    Déroulé d'un tour
-    - cherche dans la db 'save_tournement_infos.json' le round
-    - si aucun round => fais le pairing du premier round 
-        - on entre les résulats du tour 
-        - les résultats sont écris dans la db 'save_tournement_infos.json'
-        - passe au round suivant si pas la fin 
-    - sinon récupère les infos du round en cour => fait le pairing  
-        - on entre les résulats du tour 
-        - les résultats sont écris dans la db 'save_tournement_infos.json'
-        - passe au round suivant si pas la fin 
-    - si c'est la fin
-        - donne les scores
-        - rentre les résulats dans une nouvelle db 'tournament.json'
-        - supprime le fichier 'save_tournement_infos.json'
-    '''
-
     def __init__(self, 
                  t_name = "", 
                  t_place = "", 
@@ -88,7 +68,7 @@ class TournamentController:
 
     def pairing_first_round(self, list_players):
         '''
-        - Fait les pairs pour le premier round
+        - pair for first round
         '''
         #sorting suivant le rang
         
@@ -105,7 +85,7 @@ class TournamentController:
 
     def pairing_other_round(self, list_players):
         '''
-        - Fait les pairs pour les rounds autre que le premier
+        - pair for other round
         '''
         mes_paires_temp = []
         self.my_paires = []
@@ -124,7 +104,6 @@ class TournamentController:
     
     def my_tournament_console(self):
         if self.tournoi_model.test_current_tournament() == False:
-            print("je passe cond 1")
             self.infos_tournament_by_views()
             self.tournoi_write_tournament = TournamentModel(self.t_name,
                                                             self.t_place,
@@ -137,7 +116,6 @@ class TournamentController:
                                                             self.t_desc)
             self.tournoi_write_tournament.save_input_tournament_db_reg()
         else:
-            print("je passe else")
             print("current round controller : ", self.tournoi_model.current_round())
             print("test fichier : ", self.tournoi_model.test_current_tournament())
             infos = TournamentModel().retrieve_tournament()
@@ -156,7 +134,7 @@ class TournamentController:
             print("ROUND ACTUEL : ", self.tournoi_model.current_round()+1)
 
             if self.tournoi_model.current_round()+1 > 1:
-                print("round existant")
+                # if existing round
                 players = self.tournoi_model.retrieve_round()
                 players_pairing = self.pairing_other_round(players)
                 players_round = self.tournoi_views.views_round_input(players_pairing, self.tournoi_model.current_round()+1)
@@ -164,7 +142,7 @@ class TournamentController:
                 print("----------------------------------------------------------")
                 input("---------| Appuyer sur 'Entrée' pour continuer |----------")
             else:
-                print("pas de round existant")
+                # if there is no round existing
                 players = self.tournoi_model.retrieve_players_input_information()
                 players_pairing = self.pairing_first_round(players)
                 players_round = self.tournoi_views.views_round_input(players_pairing, self.tournoi_model.current_round()+1)
@@ -227,7 +205,7 @@ class TournamentController:
                 elif choix_j_t == TOURNAMENT:
                     
                     # tournament loop
-                    while choix_j_t == TOURNAMENT: 
+                    while True: 
                         choix_mt = self.clmenu.tournamentMenu()
                         if choix_mt == NEW_TOURNAMENT:
                             if self.tournoi_model.test_current_tournament() == True:
@@ -247,36 +225,42 @@ class TournamentController:
 
                         # report window
                         elif choix_mt == REPORT:
+                            while  True:
 
-                            # player report window
-                            choix_r = self.clmenu.rapports()
-                            if choix_r == REPORT_PLAYERS:
-                                choix_rj = self.clmenu.rapportsJoueurs()
-                                if choix_rj == RP_ALL_PLAYERS_ALPHABETIC:
-                                    pass
-                                elif choix_rj == RP_ALL_PLAYERS_RANK:
-                                    pass
-                                elif choix_rj == RP_ALL_PLAYERS_T_ALPHABETIC:
-                                    pass
-                                elif choix_rj == RP_ALL_PLAYERS_T_RANK:
-                                    pass
+                                # player report window
+                                choix_r = self.clmenu.rapports()
+                                if choix_r == REPORT_PLAYERS:
+                                    choix_rj = self.clmenu.rapportsJoueurs()
+                                    if choix_rj == RP_ALL_PLAYERS_ALPHABETIC:
+                                        self.clmenu.pAllPlayersAlphabetic()
+                                    elif choix_rj == RP_ALL_PLAYERS_RANK:
+                                        self.clmenu.pAllPlayersClassment()
+                                    elif choix_rj == RP_ALL_PLAYERS_T:
+
+                                        choix_rp = self.clmenu.pPlayerTournament()
+                                        if choix_rp[0] == 1:
+                                            self.clmenu.pTournamentAlphabetic()
+                                        elif choix_rp[0] == 2:
+                                            self.clmenu.pTournamentScore()
+                                        else:
+                                            pass
+                                    else:
+                                        break
+
+                                # tournament report window
+                                elif choix_r == REPORT_TOURNAMENT:
+                                    choix_rt = self.clmenu.rapportTournois()
+                                    
+                                    if choix_rt[0] == RT_ALL_IR:
+                                        self.clmenu.tMatchTournament()
+                                        pass
+                                    elif choix_rt[0] == RT_ALL_ROUND:
+                                        self.clmenu.tToursTournament()
+                                        pass
+                                    else:
+                                        break
                                 else:
                                     break
-
-                            # tournament report window
-                            elif choix_r == REPORT_TOURNAMENT:
-                                choix_rt = self.clmenu.rapportTournois()
-                                
-                                if choix_rt[0] == RT_ALL_IR:
-                                    print("coucou ir")
-                                    pass
-                                elif choix_rt[0] == RT_ALL_ROUND:
-                                    self.clmenu.tToursTournament()
-                                    pass
-                                else:
-                                    break
-                            else:
-                                break
                         else:
                             break
                 else:

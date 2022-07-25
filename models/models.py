@@ -1,8 +1,5 @@
 import os, os.path
-from os.path import exists
 import datetime
-from re import I
-from numpy import sort
 from tinydb import TinyDB, where
 
 class PlayerModel:
@@ -161,8 +158,8 @@ class ReportModel:
     def finishedTournamentNb(self, number):
         '''
         - Return all informations of tournament select by number
-        - Return 3 lists
-        - Format : ([infos,tournament,...],[{'Rondes n:[[[...,...][...,...]]]},{}],[[{infos : player}],[{}]])
+        - Return 2 lists
+        - Format : (['...','...',...],[('...','...',...),(...),...])
         '''
         pdb = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
         pdb.default_table_name = 'Players'
@@ -173,7 +170,11 @@ class ReportModel:
 
         lst_id_score = []
         lst_complete = []
+        lst_finale = []
+        lst_temp = {}
 
+        inc_01 = 0
+        
     # tournement infos
         finish_infos = TinyDB(selct_path)
         finish_infos.default_table_name = "Save_Input_Tournament"
@@ -188,23 +189,31 @@ class ReportModel:
             for n in i.values():
                 for k in n:
                     for t in k:
-                        print(t)
 
-        for findplayer in lst_id_score:
-            player = pdb.search(where('id_player') == findplayer[0])
-            player[0]['Score'] = findplayer[1]
-            lst_complete.append(player)
-            
-        print("-------------------------------------------")
-        print(lst_complete)
+                        lst_id_score={f'id_player_{inc_01}':t[0],'score':t[1]}
 
+                        player = pdb.search(where('id_player') == lst_id_score[f'id_player_{inc_01}'])[0]
+                        
+                        lst_temp['nom'] = player['Nom']
+                        lst_temp['prenom'] = player['Prenom']
+                        lst_temp['date de naissance'] = player['Date de naissance']
+                        lst_temp['genre'] = player['Genre']
+                        lst_temp['rang'] = player['Rang']
+                        lst_temp['score'] = lst_id_score['score']
+
+                        lst_complete = lst_temp['nom'], lst_temp['prenom'], lst_temp['date de naissance'], lst_temp['genre'], lst_temp['rang'], lst_temp['score']
+    
+                        lst_finale.append(lst_complete)
+
+                        inc_01 += 1
+       
         return [infos[0]['Name'],
                 infos[0]['Place'],
                 infos[0]['Date_start'],
                 infos[0]['Date_end'],
                 infos[0]['Match'],
                 infos[0]['Instance_Rondes'],
-                infos[0]['Time']]
+                infos[0]['Time']], lst_finale
 
     def allPlayerOfAllPassedTournament(self):
         '''
@@ -227,7 +236,8 @@ class ReportModel:
         '''
         self.db_tp = TinyDB(path)
         self.db_tp.default_table_name = "Save_Input_Tournament"
-
+        print(path)
+        print(self.db_tp.all())
         players_one_tournament = self.db_tp.all()[0]['Players']
         self.db_tp.close()
 
@@ -244,6 +254,21 @@ class ReportModel:
 
         return deSerialized_players_1 
 
+    def passedTournamentInfos(self):
+        '''
+        return informations of passed tournament
+        format : [{...:...},{},...]
+        '''
+        passed_tournament = []
+
+        path_tournament = self.nameFinishedTournament()
+        for i in path_tournament:
+            ttemp = TinyDB(i)
+            ttemp.default_table_name = 'Save_Input_Tournament'
+            for n in ttemp:
+                passed_tournament.append(n)
+
+        return passed_tournament
 class TournamentModel:
     def __init__(self, 
                  t_name = "", 
@@ -494,6 +519,6 @@ class TournamentModel:
             return True
         return False
 
-coucou = ReportModel()
-salut = coucou.finishedTournamentNb(2)
-print(salut)
+'''coucou = ReportModel()
+salut = coucou.passedTournamentInfos()
+print(salut)'''

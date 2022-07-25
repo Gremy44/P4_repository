@@ -1,3 +1,4 @@
+from operator import getitem
 from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QLineEdit, QSpinBox, QDateEdit, QListView, QTextEdit, QLabel, QTableWidget, QTabWidget, QWidget, QVBoxLayout, QDoubleSpinBox
 from PyQt6 import uic, QtWidgets
 from models.models import PlayerModel, TournamentModel, ReportModel
@@ -183,12 +184,14 @@ class AddPlayers(QMainWindow):
         else:
             self.gender = "N"
 
+        self.sb_rank = str("{:04d}".format(int(self.sb_rank.text())))
+
         PlayerModel().player_db_reg(
             self.line_l_name.text(), 
             self.line_f_name.text(),
             self.date_bday.text(),
             self.gender,
-            self.sb_rank.text()
+            self.sb_rank
             )
 
 class PlayerList(QMainWindow):
@@ -242,7 +245,7 @@ class Tournament(QMainWindow):
         # Connecting to actions
         self.btn_new_tournament.clicked.connect(self.btnNewT)
         self.btn_resume_tournament.clicked.connect(self.btnResumeT)
-        self.btn_back.clicked.connect(self.btnReports)
+        self.btn_reports.clicked.connect(self.btnReports)
         self.btn_back.clicked.connect(self.btnBack)
 
         #Display message if there is an existing tournament
@@ -260,7 +263,7 @@ class Tournament(QMainWindow):
         self.close()
 
     def btnReports(self):
-        self.t_to_report = Report()
+        self.t_to_report = ReportMain()
         self.t_to_report.show()
         self.close()
 
@@ -268,11 +271,6 @@ class Tournament(QMainWindow):
         self.t_to_back_main = MainWindow()
         self.t_to_back_main.show()
         self.close()
-
-class Report(QMainWindow):
-    def __init__(self):
-        super(Report,self).__init__()
-        pass
 
 class NewTournament(QMainWindow):
     def __init__(self):
@@ -636,4 +634,163 @@ class Resume(QMainWindow):
         self.t_to_round.show()
         self.close()
 
+class ReportMain(QMainWindow):
+    def __init__(self):
+        super(ReportMain,self).__init__()
+    # set variables
+        self.players = TournamentModel().retrieve_all_player_from_db()
+        self.players = sorted(self.players, key=lambda x: x['Nom'])
 
+        self.tournament = ReportModel().passedTournamentInfos()
+        self.player_or_rank = True
+
+        self.my_tournament = []
+        for i in range(len(self.tournament)):
+            self.my_tournament.append(False)
+        print(self.my_tournament)
+
+        self.a = -1
+        self.b = -1
+        self.element_true = 0
+
+    # Load the UI file
+        uic.loadUi('./views/qt_ux/reports.ui', self)
+
+    # Define widgets
+        self.rbtn_alphabetic = self.findChild(QRadioButton, "radioButton")
+        self.rbtn_rank = self.findChild(QRadioButton, "radioButton_2")
+
+        self.table_players = self.findChild(QTableWidget, "tableWidget")
+        self.table_tournament = self.findChild(QTableWidget, "tableWidget_2")
+
+        self.btn_tournament_player = self.findChild(QPushButton, "pushButton_3")
+        self.btn_tournament_rondes = self.findChild(QPushButton, "pushButton_4")
+        self.btn_tournament_match = self.findChild(QPushButton, "pushButton_5")
+
+    # List Widget
+        
+        self.get_data_player_table()
+        self.get_data_tournament_table()
+
+    # Connecting to actions
+        self.rbtn_alphabetic.clicked.connect(self.rbtnChange)
+        self.rbtn_rank.clicked.connect(self.rbtnChange)
+
+        self.btn_tournament_player.clicked.connect(self.btnPlayer)
+        self.btn_tournament_rondes.clicked.connect(self.btnRondes)
+        self.btn_tournament_match.clicked.connect(self.btnMatch)
+
+    #sel_table = QTableWidget()
+        self.table_tournament.selectionModel().selectionChanged.connect(self.on_selectionChanged)
+    
+    def rbtnChange(self):
+        if self.rbtn_alphabetic.isChecked() == True:
+            self.players = sorted(self.players, key=lambda x: x['Nom'])
+            self.get_data_player_table()
+        else:
+            self.players = sorted(self.players, key=lambda x: x['Rang'], reverse=True)
+            self.get_data_player_table()
+
+    #get data first table
+    def get_data_player_table(self):
+        row = 0
+        
+        self.tableWidget.setRowCount(len(self.players))
+        for p in self.players:
+            self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(p['Nom']))
+            self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(p['Prenom']))
+            self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(p['Date de naissance']))
+            self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(p['Genre']))
+            self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(p['Rang']))
+            row += 1
+            
+    def get_data_tournament_table(self):
+        row = 0
+        
+        self.tableWidget_2.setRowCount(len(self.tournament))
+        for p in self.tournament:
+            self.tableWidget_2.setItem(row, 0, QtWidgets.QTableWidgetItem(p['Name']))
+            self.tableWidget_2.setItem(row, 1, QtWidgets.QTableWidgetItem(p['Place']))
+            self.tableWidget_2.setItem(row, 2, QtWidgets.QTableWidgetItem(p['Date_start']))
+            row += 1
+
+    def on_selectionChanged(self, selected, deselected):   
+
+        for ix in selected.indexes():
+            self.a = ix.row()
+
+        for ix in deselected.indexes():
+            self.b = ix.row()
+
+        self.my_tournament[self.a]=True
+        self.my_tournament[self.b]=False
+
+        print(type(self.a), self.a)
+
+    def btnPlayer(self):
+        self.t_to_report_player = RPlayersTournament()
+        self.t_to_report_player.show()
+
+    def btnRondes(self):
+        pass
+
+    def btnMatch(self):
+        pass
+        
+class RPlayersTournament(QMainWindow):
+    def __init__(self):
+        super(RPlayersTournament,self).__init__()
+
+        id_match_sel = ReportMain().my_tournament
+        print('coucou', id_match_sel)
+        self.retrieve_infos = ReportModel().finishedTournamentNb(id_match_sel)
+        self.slice_r_i = self.retrieve_infos[1][-8:]
+
+        
+
+    # Load the UI file
+        uic.loadUi('./views/qt_ux/report_players_tournament.ui', self)
+
+    # Define widgets
+        self.rbtn_alphabetic = self.findChild(QRadioButton, "radioButton")
+        self.rbtn_rank = self.findChild(QRadioButton, "radioButton_2")
+
+        self.table_player = self.findChild(QTableWidget, "tableWidget")
+
+        self.btn_back = self.findChild(QPushButton, "pushButton")
+
+    # Connecting to actions
+        self.rbtn_alphabetic.clicked.connect(self.rbtnChange)
+        self.rbtn_rank.clicked.connect(self.rbtnChange)
+
+        self.btn_back.clicked.connect(self.btnBack)
+
+    # List Widget
+        self.get_data_player_table()
+
+    def rbtnChange(self):
+        if self.rbtn_alphabetic.isChecked() == True:
+            self.slice_r_i = sorted(self.slice_r_i, key=lambda x: x[0])
+            self.get_data_player_table()
+        else:
+            self.slice_r_i = sorted(self.slice_r_i, key=lambda x: x[5], reverse=True)
+            self.get_data_player_table()
+
+    def get_data_player_table(self):
+        row = 0
+        
+        self.tableWidget.setRowCount(8)
+        for p in self.slice_r_i:
+            self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(p[0]))
+            self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(p[1]))
+            self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(p[2]))
+            self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(p[3]))
+            self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(p[4]))
+            self.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(str(p[5])))
+            row += 1
+
+    def btnBack(self):
+        self.close
+
+
+            
