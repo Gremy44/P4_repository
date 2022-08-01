@@ -627,7 +627,7 @@ class MenuViews:
         print("| - 2 : Liste de tous les tours d'un tournoi")
         print("| - 3 : Retour")
         choix_rt = input("| - Votre choix : ")
-        choix_rt = self.test_num(choix_rt, 1, 3)
+        choix_rt = self.test_input.test_num(choix_rt, 1, 3)
         choix_rt = int(choix_rt)
         if choix_rt == 1:
             print("----------------------------------------------------------")
