@@ -151,11 +151,9 @@ class AddPlayerViews:
 
 class TournamentViews:
     def __init__(self):
-        self.id_round_views = TournamentModel().id_round
+        # self.id_round_views = TournamentModel().id_round
         self.complete_result = []
         self.t_players = []
-
-        self.id_player = PlayerModel()
 
     def test_num(self, mon_input, min, max):
         """
@@ -207,8 +205,8 @@ class TournamentViews:
                 mon_input = input("Entrez une date au format 'jj/mm/aaaa' : ")
 
     def ask_tounament_infos(self):
+        id_player = PlayerModel()
         self.cls()
-        print(TournamentModel().current_round())
         print("----------------------------------------------------------")
         print("----------------------------------------------------------")
         print("--|       _   _                                        |--")
@@ -224,22 +222,20 @@ class TournamentViews:
         print("----------- | Entrez les information tournois | ----------")
         print("----------------------------------------------------------")
 
-        self.t_name = input(" | - Entrez nom : ")
-        self.t_name = self.test_alpha(self.t_name)  # verification
+        t_name = input(" | - Entrez nom : ")
+        t_name = self.test_alpha(t_name)  # verification
 
-        self.t_place = input(" | - Entrez lieu : ")
-        self.t_place = self.test_alpha(self.t_place)  # verification
+        t_place = input(" | - Entrez lieu : ")
+        t_place = self.test_alpha(t_place)  # verification
 
-        self.t_date_start = input(" | - Entrez date de début 'jj/mm/aaaa': ")
-        self.t_date_start = self.test_date(self.t_date_start)  # verification
+        t_date_start = input(" | - Entrez date de début 'jj/mm/aaaa': ")
+        t_date_start = self.test_date(t_date_start)  # verification
 
-        self.t_date_end = input(" | - Entrez date de fin 'jj/mm/aaaa': ")
-        self.t_date_end = self.test_date(self.t_date_end)  # verification
+        t_date_end = input(" | - Entrez date de fin 'jj/mm/aaaa': ")
+        t_date_end = self.test_date(t_date_end)  # verification
 
-        self.t_tours = 4
-
-        self.t_instances_rondes = input(" | - Entrez instances rondes : ")
-        self.t_instances_rondes = self.test_num(self.t_instances_rondes, 0, 10)  # verification
+        t_instances_rondes = input(" | - Entrez instances rondes : ")
+        t_instances_rondes = self.test_num(t_instances_rondes, 0, 10)  # verification
 
         print(" |   - Test : utiliser une liste déjà faite ?:")
         print(" | 1 - Utiliser liste déjà faite")
@@ -249,8 +245,8 @@ class TournamentViews:
         cp = self.test_num(cp, 1, 2)  # verification
 
         if int(cp) == 1:
-            self.t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720,
-                              2123311234976, 1988607754144, 1384106246048, 2187293245344]
+            t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720,
+                         2123311234976, 1988607754144, 1384106246048, 2187293245344]
         else:
             for i in range(8):
                 j_temp = input(
@@ -258,15 +254,15 @@ class TournamentViews:
                 j_temp = self.test_num(j_temp, 1, len(TournamentModel().retrieve_all_player_from_db()))
                 self.t_players.append(int(j_temp))
 
-            self.t_players = self.id_player.retrievePlayerFromNumber(self.t_players)
+            t_players = id_player.retrievePlayerFromNumber(t_players)
 
-        self.t_time = input(" | - Bullet/Blitz/coup rapide : ")
-        self.t_time = self.test_alpha(self.t_time)  # verification
+        t_time = input(" | - Bullet/Blitz/coup rapide : ")
+        t_time = self.test_alpha(t_time)  # verification
 
-        self.t_desc = input(" | - Entrez description : ")
-        self.t_desc = self.test_alpha(self.t_desc)  # verification
+        t_desc = input(" | - Entrez description : ")
+        t_desc = self.test_alpha(t_desc)  # verification
 
-        return self.t_name, self.t_place, self.t_date_start, self.t_date_end, self.t_tours, self.t_instances_rondes, self.t_players, self.t_time, self.t_desc
+        return t_name, t_place, t_date_start, t_date_end, 4, t_instances_rondes, t_players, t_time, t_desc
 
     def views_round_input(self, sorted_paires, ronde):
         '''
