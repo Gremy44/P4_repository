@@ -2,6 +2,7 @@ import os
 import os.path
 from tinydb import TinyDB, where
 
+
 class PlayerModel:
     def __init__(self):
         pass
@@ -9,9 +10,9 @@ class PlayerModel:
     def player_id(self):
         return id(PlayerModel)
 
-    def player_db_reg(self, l_name, f_name, b_day, gender, rank):  # enregistre les infos joueurs dans la base donnée
+    def player_db_reg(self, l_name, f_name, b_day, gender, rank):
         '''
-        Enregistre le joueur dans la db
+        Save player in db
         '''
         # ----directory creation----
         try:
@@ -33,12 +34,11 @@ class PlayerModel:
         self.db.close()
 
     def save_round_advance(self, players_infos: list, round: int):
-        # obj creation and path
+
         db_save = TinyDB("./chess_data_base/tounament/actual_tournament/save_tournament_infos.json")
         db_save.default_table_name = f"Round {str(round)}"  # table name
-        print("Round :", round)
+
         for i in range(len(players_infos)):
-            #print("players infos", players_infos)
             joueur_1_id = players_infos[i][0]['id_player']
             joueur_1_score = players_infos[i][0]['Score']
             joueur_2_id = players_infos[i][1]['id_player']
@@ -59,6 +59,7 @@ class PlayerModel:
             lst_id.append(nb_player.get(doc_id=i)['id_player'])
 
         return lst_id
+
 
 class ReportModel:
     def __init__(self) -> None:
@@ -124,11 +125,8 @@ class ReportModel:
 
     def allRondes(self, tournament_path):
         '''
-        Return all result from a tournament 
+        - Return all result from a tournament
         '''
-
-        #tournament_path = './chess_data_base/tounament/finished_tournaments/tournament_2936352514832_infos.json'
-
         tables = []
 
         all_rondes = TinyDB(tournament_path)
@@ -145,8 +143,8 @@ class ReportModel:
 
     def nameFinishedTournament(self):
         '''
-        Retourne une liste .json présents dans le repertoire 'finished_tournament'
-        Format ['...','...',...]
+        - Return a list of .json files present in folder 'finished_tournament'
+        - Format ['...','...',...]
         '''
         l_tournament = []
 
@@ -160,13 +158,13 @@ class ReportModel:
         '''
         - Return all informations of tournament select by number
         - Return 3 lists
-        - Format : (['...','...',...],[('...','...',...),(...),...])
+        - Format : (['...','...',...],[('...','...',...),(...),...])([...])
         '''
         pdb = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
         pdb.default_table_name = 'Players'
 
         lst_tournament = self.nameFinishedTournament()
-        
+
         selct_path = lst_tournament[int(number)-1]
 
         lst_id_score = []
@@ -186,13 +184,11 @@ class ReportModel:
     # tournee infos
         finish_infos.default_table_name = "Tournees"
         infos_match = finish_infos.all()
-        # print("INFOD MATCH : ", infos_match)
 
         for i in infos_match:
             for n in i[f'Ronde {inc_02}']:
                 for k in n:
-                    # for t in k:
-                        # print('T ====> : ', t)
+
                     lst_id_score = {f'id_player_{inc_01}': k[0], 'score': k[1]}
 
                     player = pdb.search(where('id_player') == lst_id_score[f'id_player_{inc_01}'])[0]
@@ -204,7 +200,12 @@ class ReportModel:
                     lst_temp['rang'] = player['Rang']
                     lst_temp['score'] = lst_id_score['score']
 
-                    lst_complete = lst_temp['nom'], lst_temp['prenom'], lst_temp['date de naissance'], lst_temp['genre'], lst_temp['rang'], lst_temp['score']
+                    lst_complete = [lst_temp['nom'],
+                                    lst_temp['prenom'],
+                                    lst_temp['date de naissance'],
+                                    lst_temp['genre'],
+                                    lst_temp['rang'],
+                                    lst_temp['score']]
 
                     lst_finale.append(lst_complete)
 
@@ -225,7 +226,7 @@ class ReportModel:
 
     def allPlayerOfAllPassedTournament(self):
         '''
-        Retourne la liste complète d'id joueur ayant participé aux tournois
+        Return complet list of ID players of tournament
         Format : [[...,...,...][...,...,...],[],...]
         '''
         l_joueurs_tournois = []
@@ -240,7 +241,7 @@ class ReportModel:
 
     def idPlayerFromOneTournament(self, path):
         '''
-        Return the list of players from the specify tournament 
+        Return the list of players from the specify tournament
         '''
         self.db_tp = TinyDB(path)
         self.db_tp.default_table_name = "Save_Input_Tournament"
@@ -276,6 +277,7 @@ class ReportModel:
                 passed_tournament.append(n)
 
         return passed_tournament
+
 
 class TournamentModel:
     def __init__(self,
@@ -374,7 +376,8 @@ class TournamentModel:
             pass
 
         path = "./chess_data_base/tounament/actual_tournament/save_tournament_infos.json"
-        path_replace = f"./chess_data_base/tounament/finished_tournaments/{ct_id_ls[0]['Name']}-{ct_id_ls[0]['id_tournament']}.json"
+        path_replace = ("./chess_data_base/tounament/finished_tournaments/"
+                        f"{ct_id_ls[0]['Name']}-{ct_id_ls[0]['id_tournament']}.json")
         os.rename(path, path_replace.replace(" ", "_"))
 
     @staticmethod
@@ -403,7 +406,7 @@ class TournamentModel:
         return tournament
 
     def retrieve_round(self):
-        ''' 
+        '''
         - Return a list with players and score at the last round
         - Format => [{...}{...}{...}...]
         '''
@@ -528,27 +531,3 @@ class TournamentModel:
         if tables_nb > 1:
             return True
         return False
-
-
-'''coucou = TournamentModel()
-salut = coucou.timeBegin()
-print(type(salut))
-'''
-
-'''def test_tournament(mon_input):
-        """
-        - Test numeric value in the interval
-        """
-        while True:
-            if mon_input == '0' or mon_input == '0.5' or mon_input == '1':
-                return float(mon_input)
-            else:
-                print("----------------------------------------------------------")
-                mon_input = input("--| Entrez une valeur valide ('0'/'0.5'/'1') : ")
-
-
-coucou = input("chaine de caractere : ")
-
-coucou = test_tournament(coucou)
-
-print(coucou)'''

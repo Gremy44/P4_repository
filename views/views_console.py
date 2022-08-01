@@ -1,4 +1,5 @@
 from models.models import PlayerModel, TournamentModel, ReportModel
+import controllers.controller
 import os
 import time
 
@@ -12,52 +13,7 @@ class AddPlayerViews:
         self.rank = rank
         self.score = 0.0
 
-    def test_num(self, mon_input, min, max):
-        """
-        - Test numeric value in the interval
-        """
-        while True:
-            if mon_input.isdigit() and int(mon_input) >= min and int(mon_input) <= max:
-                return int(mon_input)
-            else:
-                print("----------------------------------------------------------")
-                mon_input = input(f"--| Entrez un chiffre valide compris entre {min} et {max} : ")
-
-    def test_alpha(self, mon_input):
-        """
-        - Test alphabetic string
-        """
-        while True:
-            if mon_input.isalpha():
-                return mon_input
-            else:
-                mon_input = input("N'entrez que des lettres svp : ")
-
-    def test_alpha_one_letter(mon_input):
-        """
-        - Test gender
-        """
-        while True:
-            if mon_input.capitalize() == 'H' or mon_input.capitalize() == 'F' or mon_input.capitalize() == 'N':
-                if len(mon_input) == 1:
-                    return mon_input
-                else:
-                    mon_input = input("N'entrez seulement que 'H' ou 'F' ou 'N': ")
-            else:
-                mon_input = input("N'entrez seulement que 'H' ou 'F' ou 'N': ")
-
-    def test_date(mon_input):
-        """
-        - Test date format
-        """
-        while True:
-            if len(mon_input) == 10 and mon_input.count("/") == 2:
-                if mon_input.replace("/", "").isdigit() is True:
-                    return mon_input
-                else:
-                    mon_input = input("Entrez une date au format 'jj/mm/aaaa' : ")
-            else:
-                mon_input = input("Entrez une date au format 'jj/mm/aaaa' : ")
+        self.test_input = controllers.controller.InputVerification()
 
     def ask_player_infos(self):
         print("----------------------------------------------------------")
@@ -77,19 +33,19 @@ class AddPlayerViews:
         print("----------------------------------------------------------")
 
         self.l_name = input(" | - Entrez nom : ")
-        self.l_name = self.test_alpha(self.l_name)  # verification
+        self.l_name = self.test_input.test_alpha(self.l_name)  # verification
 
         self.f_name = input(" | - Entrez prénom : ")
-        self.f_name = self.test_alpha(self.f_name)  # verification
+        self.f_name = self.test_input.test_alpha(self.f_name)  # verification
 
         self.b_day = input(" | - Date d'anniversaire (jj/mm/aaaa): ")
-        self.b_day = self.test_date(self.b_day)  # verification
+        self.b_day = self.test_input.test_date(self.b_day)  # verification
 
         self.gender = input(" | - Genre (H/F/N) : ")
-        self.gender = self.test_alpha_one_letter(self.gender)  # verification
+        self.gender = self.test_input.test_alpha_one_letter(self.gender)  # verification
 
         self.rank = input(" | - Rang : ")
-        self.rank = self.test_num(self.rank, 0, 3000)  # verification
+        self.rank = self.test_input.test_num(self.rank, 0, 3000)  # verification
         self.rank = str("{:04d}".format(int(self.rank)))
 
         print(" -------------------------------------------------------- ")
@@ -99,7 +55,7 @@ class AddPlayerViews:
         print("| - 2 : Retour")
         print("| ------------------------------------------------------- ")
         val_player = input("| - Votre choix : ")
-        val_player = self.test_num(val_player, 1, 2)  # verification
+        val_player = self.test_input.test_num(val_player, 1, 2)  # verification
 
         if int(val_player) == 1:
             MenuViews.cls()
@@ -149,60 +105,15 @@ class AddPlayerViews:
         input("Appuyez sur une touche pour continuer.")
         MenuViews.cls()
 
+
 class TournamentViews:
     def __init__(self):
         # self.id_round_views = TournamentModel().id_round
         self.complete_result = []
         self.t_players = []
 
-    def test_num(self, mon_input, min, max):
-        """
-        - Test numeric value in the interval
-        """
-        while True:
-            if mon_input.isdigit() and int(mon_input) >= min and int(mon_input) <= max:
-                return int(mon_input)
-            else:
-                print("----------------------------------------------------------")
-                mon_input = input(f"--| Entrez un chiffre valide compris entre {min} et {max} : ")
-
-    def test_tournament(self, mon_input):
-        """
-        - Test value in tournament
-        """
-        while True:
-            if mon_input == '0' or mon_input == '0.5' or mon_input == '1':
-                return float(mon_input)
-            else:
-                print("----------------------------------------------------------")
-                mon_input = input("--| Entrez une valeur valide ('0'/'0.5'/'1') : ")
-
-    def test_alpha(self, mon_input):
-        """
-        - Test alphabetic string
-        """
-        while True:
-            mon_input_modif = mon_input.replace(" ", "")
-            if mon_input_modif.isalpha():
-                return mon_input
-            else:
-                print("----------------------------------------------------------")
-                mon_input = input("--| N'entrez que des lettres svp : ")
-
-    def test_date(self, mon_input):
-        """
-        - Test date format
-        """
-        while True:
-            if len(mon_input) == 10 and mon_input.count("/") == 2:
-                if mon_input.replace("/", "").isdigit() is True:
-                    return mon_input
-                else:
-                    print("----------------------------------------------------------")
-                    mon_input = input("Entrez une date au format 'jj/mm/aaaa' : ")
-            else:
-                print("----------------------------------------------------------")
-                mon_input = input("Entrez une date au format 'jj/mm/aaaa' : ")
+        # object for input test
+        self.test_input = controllers.controller.InputVerification()
 
     def ask_tounament_infos(self):
         id_player = PlayerModel()
@@ -223,26 +134,26 @@ class TournamentViews:
         print("----------------------------------------------------------")
 
         t_name = input(" | - Entrez nom : ")
-        t_name = self.test_alpha(t_name)  # verification
+        t_name = self.test_input.test_alpha(t_name)  # verification
 
         t_place = input(" | - Entrez lieu : ")
-        t_place = self.test_alpha(t_place)  # verification
+        t_place = self.test_input.test_alpha(t_place)  # verification
 
         t_date_start = input(" | - Entrez date de début 'jj/mm/aaaa': ")
-        t_date_start = self.test_date(t_date_start)  # verification
+        t_date_start = self.test_input.test_date(t_date_start)  # verification
 
         t_date_end = input(" | - Entrez date de fin 'jj/mm/aaaa': ")
-        t_date_end = self.test_date(t_date_end)  # verification
+        t_date_end = self.test_input.test_date(t_date_end)  # verification
 
         t_instances_rondes = input(" | - Entrez instances rondes : ")
-        t_instances_rondes = self.test_num(t_instances_rondes, 0, 10)  # verification
+        t_instances_rondes = self.test_input.test_num(t_instances_rondes, 0, 10)  # verification
 
         print(" |   - Test : utiliser une liste déjà faite ?:")
         print(" | 1 - Utiliser liste déjà faite")
         print(" | 2 - Faire ma liste")
 
         cp = input(" |   - Entrez votre choix : ")
-        cp = self.test_num(cp, 1, 2)  # verification
+        cp = self.test_input.test_num(cp, 1, 2)  # verification
 
         if int(cp) == 1:
             t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720,
@@ -251,16 +162,16 @@ class TournamentViews:
             for i in range(8):
                 j_temp = input(
                     f" | - Entrez le N° joueur du joueur N°:{i+1}/8 : ")
-                j_temp = self.test_num(j_temp, 1, len(TournamentModel().retrieve_all_player_from_db()))
+                j_temp = self.test_input.test_num(j_temp, 1, len(TournamentModel().retrieve_all_player_from_db()))
                 self.t_players.append(int(j_temp))
 
             t_players = id_player.retrievePlayerFromNumber(t_players)
 
         t_time = input(" | - Bullet/Blitz/coup rapide : ")
-        t_time = self.test_alpha(t_time)  # verification
+        t_time = self.test_input.test_alpha(t_time)  # verification
 
         t_desc = input(" | - Entrez description : ")
-        t_desc = self.test_alpha(t_desc)  # verification
+        t_desc = self.test_input.test_alpha(t_desc)  # verification
 
         return t_name, t_place, t_date_start, t_date_end, 4, t_instances_rondes, t_players, t_time, t_desc
 
@@ -293,11 +204,11 @@ class TournamentViews:
 
             score_p1 = input(
                 f"| - Score joueur {sorted_paires[i][0]['Nom']} {sorted_paires[i][0]['Prenom']} ('0'/'0.5'/'1'): ")
-            score_p1 = self.test_tournament(score_p1)  # verification
+            score_p1 = self.test_input.test_tournament(score_p1)  # verification
 
             score_p2 = input(
                 f"| - Score joueur {sorted_paires[i][1]['Nom']} {sorted_paires[i][1]['Prenom']} ('0'/'0.5'/'1'): ")
-            score_p2 = self.test_tournament(score_p2)  # verification
+            score_p2 = self.test_input.test_tournament(score_p2)  # verification
 
             sorted_paires[i][0]['Score'] = sorted_paires[i][0]['Score'] + \
                 float(score_p1)
@@ -342,20 +253,14 @@ class TournamentViews:
     def cls():
         os.system('cls' if os.name == 'nt' else 'clear')
 
-class MenuViews:
-    def __init__(self) -> None:
-        self.cls()
 
-    def test_num(self, mon_input, min, max):
-        """
-        - Test numeric value in the interval
-        """
-        while True:
-            if mon_input.isdigit() and int(mon_input) >= min and int(mon_input) <= max:
-                return int(mon_input)
-            else:
-                print("----------------------------------------------------------")
-                mon_input = input(f"--| Entrez un chiffre valide compris entre {min} et {max} : ")
+class MenuViews:
+    def __init__(self):
+
+        # object for input test
+        self.test_input = controllers.controller.InputVerification()
+
+        self.cls()
 
     def appliTitle(self):
         print("---------------------------------------------------------------------------------------")
@@ -378,7 +283,7 @@ class MenuViews:
         print("| - 2 : Non")
         print("| - 3 : Quitter")
         choix_gui = input("| - Votre choix : ")
-        choix_gui = self.test_num(choix_gui, 1, 3)
+        choix_gui = self.test_input.test_num(choix_gui, 1, 3)
         self.cls()
 
         return int(choix_gui)
@@ -399,7 +304,7 @@ class MenuViews:
         print("| - 2 : Tournoi")
         print("| - 3 : Quitter")
         choix_j_t = input("| - Votre choix : ")
-        choix_j_t = self.test_num(choix_j_t, 1, 3)
+        choix_j_t = self.test_input.test_num(choix_j_t, 1, 3)
         self.cls()
 
         return int(choix_j_t)
@@ -419,7 +324,7 @@ class MenuViews:
         print("| - 2 : Voir les joueurs existants")
         print("| - 3 : Retour")
         choix_j = input("| - Votre choix : ")
-        choix_j = self.test_num(choix_j, 1, 3)
+        choix_j = self.test_input.test_num(choix_j, 1, 3)
         self.cls()
 
         return int(choix_j)
@@ -441,7 +346,7 @@ class MenuViews:
         print("| - 3 : Rapports de tournois")
         print("| - 4 : Retour")
         choix_t = input("| - Votre choix : ")
-        choix_t = self.test_num(choix_t, 1, 4)
+        choix_t = self.test_input.test_num(choix_t, 1, 4)
         self.cls()
 
         return int(choix_t)
@@ -463,7 +368,7 @@ class MenuViews:
         print("| - 2 : Rapports sur les tournois")
         print("| - 3 : Retour")
         choix_r = input("| - Votre choix : ")
-        choix_r = self.test_num(choix_r, 1, 3)
+        choix_r = self.test_input.test_num(choix_r, 1, 3)
         self.cls()
 
         return int(choix_r)
@@ -489,7 +394,7 @@ class MenuViews:
         print("| - 3 : Infos joueurs sur un tournois")
         print("| - 4 : Retour")
         choix_rj = input("| - Votre choix : ")
-        choix_rj = self.test_num(choix_rj, 1, 4)
+        choix_rj = self.test_input.test_num(choix_rj, 1, 4)
         return int(choix_rj)
 
     def pAllPlayersAlphabetic(self):
@@ -598,7 +503,7 @@ class MenuViews:
         print("| - 3 : Retour")
 
         choix_rp = input("| - Votre choix : ")
-        choix_rp = self.test_num(choix_rp, 1, 3)
+        choix_rp = self.test_input.test_num(choix_rp, 1, 3)
         # choix_rp = int(choix_rp)
 
         if choix_rp == 1:
@@ -823,7 +728,7 @@ class MenuViews:
 
     def existing_tournament(self):
         """
-        vue pour demander confirmation de créer un nouveau tournoi si tournoi existant
+        - Print this view if there is an existent Tournament
         """
         print("----------------------------------------------------------")
         print("|   Un tournoi existant à été trouvé,                    |")
@@ -832,7 +737,7 @@ class MenuViews:
         print("| - 1 : Oui")
         print("| - 2 : Non")
         choix_nm = input("| - Votre choix : ")
-        choix_nm = self.test_num(choix_nm, 1, 2)
+        choix_nm = self.test_input.test_num(choix_nm, 1, 2)
 
         return int(choix_nm)
 
@@ -872,4 +777,7 @@ class MenuViews:
 
     @staticmethod
     def cls():
+        """
+        - Clean console
+        """
         os.system('cls' if os.name == 'nt' else 'clear')

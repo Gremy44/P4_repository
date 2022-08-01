@@ -5,6 +5,72 @@ import controllers.constants as constants
 import time
 
 
+class InputVerification:
+    """
+    - Test the input
+    """
+
+    def test_num(self, mon_input, min, max):
+        """
+        - Test numeric value in the interval
+        """
+        while True:
+            if mon_input.isdigit() and int(mon_input) >= min and int(mon_input) <= max:
+                return int(mon_input)
+            else:
+                print("----------------------------------------------------------")
+                mon_input = input(f"--| Entrez un chiffre valide compris entre {min} et {max} : ")
+
+    def test_alpha(self, mon_input: str):
+        """
+        - Test alphabetic string
+        """
+        inp_tmp = mon_input.replace(" ", "")
+
+        while True:
+            if inp_tmp.isalpha():
+                return mon_input
+            else:
+                mon_input = input("N'entrez que des lettres svp : ")
+
+    def test_alpha_one_letter(self, mon_input):
+        """
+        - Test gender
+        """
+        while True:
+            if mon_input.capitalize() == 'H' or mon_input.capitalize() == 'F' or mon_input.capitalize() == 'N':
+                if len(mon_input) == 1:
+                    return mon_input
+                else:
+                    mon_input = input("N'entrez seulement que 'H' ou 'F' ou 'N': ")
+            else:
+                mon_input = input("N'entrez seulement que 'H' ou 'F' ou 'N': ")
+
+    def test_date(self, mon_input):
+        """
+        - Test date format
+        """
+        while True:
+            if len(mon_input) == 10 and mon_input.count("/") == 2:
+                if mon_input.replace("/", "").isdigit() is True:
+                    return mon_input
+                else:
+                    mon_input = input("Entrez une date au format 'jj/mm/aaaa' : ")
+            else:
+                mon_input = input("Entrez une date au format 'jj/mm/aaaa' : ")
+
+    def test_tournament(self, mon_input):
+        """
+        - Test value in tournament
+        """
+        while True:
+            if mon_input == '0' or mon_input == '0.5' or mon_input == '1':
+                return float(mon_input)
+            else:
+                print("----------------------------------------------------------")
+                mon_input = input("--| Entrez une valeur valide ('0'/'0.5'/'1') : ")
+
+
 class AddPlayerController:
     def __init__(self) -> None:
         pass
@@ -22,37 +88,14 @@ class AddPlayerController:
                                     add_player_view[2], add_player_view[3],
                                     add_player_view[4])
 
+
 class TournamentController:
-    def __init__(self,
-                 t_name="",
-                 t_place="",
-                 t_date_start="",
-                 t_date_end="",
-                 t_tours=4,
-                 t_instances_rondes=0,
-                 t_players=[],
-                 t_time="",
-                 t_desc=""):
-
-        self.t_name = t_name
-        self.t_place = t_place
-        self.t_date_start = t_date_start
-        self.t_date_end = t_date_end
-        self.t_round = t_tours
-        self.t_ronde = t_instances_rondes
-        self.t_players = t_players
-        self.t_time = t_time
-        self.t_desc = t_desc
-
+    def __init__(self):
         self.tournoi_views = TournamentViews()
         self.tournoi_model = TournamentModel()
         self.tournoi_player = PlayerModel()
         self.tournoi_add_player = AddPlayerViews()
         self.clmenu = MenuViews()
-
-        self.round_1 = []
-        self.tournament_infos = []
-        self.my_paires = []
 
     def infos_tournament_by_views(self):
         tournament_infos = TournamentViews().ask_tounament_infos()
@@ -70,6 +113,8 @@ class TournamentController:
         '''
         - pair for first round
         '''
+        my_paires = []
+
         # sorting suivant le rang
 
         tri = []
@@ -80,16 +125,16 @@ class TournamentController:
 
         for i in range(length_to_split):  # fait les paires
             paires_1 = [tri[i], tri[i+length_to_split]]
-            self.my_paires.append(paires_1)
+            my_paires.append(paires_1)
 
-        return self.my_paires
+        return my_paires
 
     def pairing_other_round(self, list_players):
         '''
         - pair for other round
         '''
         mes_paires_temp = []
-        self.my_paires = []
+        my_paires = []
 
         pair = sorted(list_players, key=lambda x: (x['Score'], x['Rang']))
 
@@ -98,10 +143,10 @@ class TournamentController:
             mes_paires_temp.append(pair[mod+i])
             mod += 1
             mes_paires_temp.append(pair[mod+i])
-            self.my_paires.insert(i, mes_paires_temp)
+            my_paires.insert(i, mes_paires_temp)
             mes_paires_temp = []
 
-        return self.my_paires
+        return my_paires
 
     def dateHourBegin(self):
         date_hour_begin = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
@@ -115,6 +160,8 @@ class TournamentController:
 
     def my_tournament_console(self):
         if not self.tournoi_model.test_current_tournament():
+
+            # Hydrate object if there is no existing round
             self.infos_tournament_by_views()
             self.tournoi_write_tournament = TournamentModel(self.t_name,
                                                             self.t_place,
@@ -127,10 +174,10 @@ class TournamentController:
                                                             self.t_desc)
             self.tournoi_write_tournament.save_input_tournament_db_reg()
         else:
-            print("current round controller : ",
-                  self.tournoi_model.current_round())
-            print("test fichier : ", self.tournoi_model.test_current_tournament())
-            infos = TournamentModel().retrieve_tournament()
+
+            # Retrieve and hydrate function if there is existing round
+            infos = self.tournoi_model.retrieve_tournament()
+
             self.t_name = infos[0]["Name"]
             self.t_place = infos[0]["Place"]
             self.t_date_start = infos[0]["Date_start"]
@@ -155,6 +202,7 @@ class TournamentController:
                 date_hour_end = self.dateHourEnd()  # save date hour end in var
                 self.tournoi_model.save_round_advance(
                     players_round, self.tournoi_model.current_round()+1, date_hour_bgn, date_hour_end)
+
                 print("----------------------------------------------------------")
                 input("---------| Appuyer sur 'Entrée' pour continuer |----------")
             else:
@@ -167,6 +215,7 @@ class TournamentController:
                 date_hour_end = self.dateHourEnd()
                 self.tournoi_model.save_round_advance(
                     players_round, self.tournoi_model.current_round()+1, date_hour_bgn, date_hour_end)
+
                 print("----------------------------------------------------------")
                 input("---------| Appuyer sur 'Entrée' pour continuer |----------")
 
@@ -174,13 +223,9 @@ class TournamentController:
         self.tournoi_model.save_finished_tournament()
 
     def start(self):
-
-        # choix_gui_console = typer.confirm("Utiliser l'interface graphique ?")
-
-        # hydrate tournoi retrieve avec les infos tournoi
-        # si pas de tournoi créé, demande les infos et en créé un
-        # si tournoi, récupère les infos dans la db
-
+        """
+        - Console interface operation
+        """
         self.clmenu.appliTitle()
         choix_gui = self.clmenu.cl_gui()
 

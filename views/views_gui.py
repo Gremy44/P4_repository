@@ -1,4 +1,6 @@
-from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QLineEdit, QSpinBox, QDateEdit, QTextEdit, QLabel, QTableWidget, QTabWidget, QDoubleSpinBox, QPlainTextEdit
+from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton,\
+    QLineEdit, QSpinBox, QDateEdit, QTextEdit, QLabel,\
+    QTableWidget, QTabWidget, QDoubleSpinBox, QPlainTextEdit
 from PyQt6 import uic, QtWidgets
 from models.models import PlayerModel, TournamentModel, ReportModel
 import time
@@ -22,7 +24,6 @@ class ControllerGui(QMainWindow):
         - Fait les pairs pour le premier round
         '''
         # sorting suivant le rang
-        tri_temp = []
         tri = []
         # tri par rang
         tri = sorted(self.list_players, key=lambda x: x['Rang'])
@@ -39,7 +40,6 @@ class ControllerGui(QMainWindow):
         '''
         - Fait les pairs pour les rounds autre que le premier
         '''
-        tri_temp = []
         mes_paires_temp = []
         self.my_paires = []
 
@@ -54,6 +54,7 @@ class ControllerGui(QMainWindow):
             mes_paires_temp = []
 
         return self.my_paires
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -96,6 +97,7 @@ class MainWindow(QMainWindow):
 
         sys.exit(app.exec())  # execute
 
+
 class PlayersWindow(QMainWindow):
     def __init__(self):
         super(PlayersWindow, self).__init__()
@@ -127,6 +129,7 @@ class PlayersWindow(QMainWindow):
         self.t_to_back_main = MainWindow()
         self.t_to_back_main.show()
         self.close()
+
 
 class AddPlayers(QMainWindow):
     def __init__(self):
@@ -180,6 +183,7 @@ class AddPlayers(QMainWindow):
             self.gender,
             self.sb_rank)
 
+
 class PlayerList(QMainWindow):
     def __init__(self):
         super(PlayerList, self).__init__()
@@ -213,6 +217,7 @@ class PlayerList(QMainWindow):
         self.t_to_back_players = PlayersWindow()
         self.t_to_back_players.show()
         self.close()
+
 
 class Tournament(QMainWindow):
     def __init__(self):
@@ -261,6 +266,7 @@ class Tournament(QMainWindow):
         self.t_to_back_main = MainWindow()
         self.t_to_back_main.show()
         self.close()
+
 
 class NewTournament(QMainWindow):
     def __init__(self):
@@ -356,6 +362,7 @@ class NewTournament(QMainWindow):
 
         return id_player
 
+
 class PlayerListSel(QMainWindow):
     def __init__(self):
         super(PlayerListSel, self).__init__()
@@ -429,6 +436,7 @@ class PlayerListSel(QMainWindow):
             self.close()
             return self.my_players
 
+
 class Begin(QMainWindow):
     def __init__(self):
         super(Begin, self).__init__()
@@ -447,6 +455,7 @@ class Begin(QMainWindow):
         self.n = QWRoundEmpty()
         self.n.show()
         self.close()
+
 
 class QWRound(QMainWindow):
     def __init__(self):
@@ -480,6 +489,7 @@ class QWRound(QMainWindow):
             self.s_p_2.setEnabled(True)
         return btn
 
+
 class QWRoundEmpty(QMainWindow):
     def __init__(self):
         super(QWRoundEmpty, self).__init__()
@@ -500,7 +510,7 @@ class QWRoundEmpty(QMainWindow):
 
         if self.ctr_gui.actual_round < self.rondes:
 
-        # Load the UI file
+            # Load the UI file
             uic.loadUi('./views/qt_ux/round_empty.ui', self)
 
         # Define Widgets
@@ -586,6 +596,7 @@ class QWRoundEmpty(QMainWindow):
         else:
             self.lbl_warning.setText("Valider toutes les rondes pour pouvoir valider le round")
 
+
 class Results(QMainWindow):
     def __init__(self):
         super(Results, self).__init__()
@@ -593,7 +604,6 @@ class Results(QMainWindow):
     # Variables
         self.tournament = TournamentModel()
         self.tournament_infos = self.tournament.sorted_players()
-        print(self.tournament_infos)
 
     # Load the UI file
         uic.loadUi('./views/qt_ux/results.ui', self)
@@ -623,6 +633,7 @@ class Results(QMainWindow):
             self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(str(p['Score'])))
             row += 1
 
+
 class Resume(QMainWindow):
     def __init__(self):
         super(Resume, self).__init__()
@@ -640,6 +651,7 @@ class Resume(QMainWindow):
         self.t_to_round = QWRoundEmpty()
         self.t_to_round.show()
         self.close()
+
 
 class ReportMain(QMainWindow):
     def __init__(self):
@@ -754,6 +766,7 @@ class ReportMain(QMainWindow):
         self.t_to_tournament.show()
         self.close()
 
+
 class RPlayersTournament(QMainWindow):
     def __init__(self, value_a):
         super(RPlayersTournament, self).__init__()
@@ -809,6 +822,7 @@ class RPlayersTournament(QMainWindow):
     def btnBack(self):
         self.close()
 
+
 class Rondes(QMainWindow):
     def __init__(self, value_a):
         super(Rondes, self).__init__()
@@ -838,7 +852,8 @@ class Rondes(QMainWindow):
             if i % (infos_tournoi[0][4]*2) == 0:
                 report_rondes_text = report_rondes_text + f"───────┤ Round {inc_01} ├───────\n"
                 inc_01 += 1
-            report_rondes_text = report_rondes_text + f"{infos_tournoi[1][i][1]} {infos_tournoi[1][i][0]} avec un score de {infos_tournoi[1][i][5]} \n"
+            report_rondes_text = report_rondes_text + \
+                f"{infos_tournoi[1][i][1]} {infos_tournoi[1][i][0]} avec un score de {infos_tournoi[1][i][5]} \n"
 
         print("info tournoi : ", report_rondes_text)
 
@@ -846,6 +861,7 @@ class Rondes(QMainWindow):
 
     def btnClose(self):
         self.close()
+
 
 class Matchs(QMainWindow):
     def __init__(self, value_a):
@@ -877,7 +893,9 @@ class Matchs(QMainWindow):
             if i % (infos_tournoi[0][4]) == 0:
                 report_matchs_text = report_matchs_text + f"───────┤ Round {inc_01} ├───────\n"
                 inc_01 += 1
-            report_matchs_text = report_matchs_text + f"{infos_tournoi[1][inc_02][1]} {infos_tournoi[1][inc_02][0]} VS {infos_tournoi[1][inc_02+1][1]} {infos_tournoi[1][inc_02+1][0]} \n"
+            report_matchs_text = report_matchs_text + \
+                f"{infos_tournoi[1][inc_02][1]} {infos_tournoi[1][inc_02][0]}" + \
+                f" VS {infos_tournoi[1][inc_02+1][1]} {infos_tournoi[1][inc_02+1][0]} \n"
             inc_02 += 2
 
         self.lbl_rondes.setPlainText(report_matchs_text)
