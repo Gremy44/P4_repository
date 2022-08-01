@@ -1,83 +1,84 @@
-from models.models import PlayerModel, TournamentModel, ReportModel
-from views.views_console import AddPlayerViews, TournamentModel, MenuViews, TournamentViews
+from models.models import PlayerModel, TournamentModel
+from views.views_console import AddPlayerViews, MenuViews, TournamentViews
 from views.views_gui import AddPlayers, MainWindow
-from controllers.constants import *
+import controllers.constants as constants
+import time
+
 
 class AddPlayerController:
     def __init__(self) -> None:
         pass
-    
-    def add_player(self): # add new player to db
+
+    def add_player(self):  # add new player to db
         add_player_view = AddPlayerViews()
         infos_player = add_player_view.ask_player_infos()
         PlayerModel().player_db_reg(infos_player[0], infos_player[1],
-                                       infos_player[2], infos_player[3],
-                                       infos_player[4])
+                                    infos_player[2], infos_player[3],
+                                    infos_player[4])
 
     def add_player_GUI(self):
         add_player_view = AddPlayers.send_add_player_infos()
         PlayerModel().player_db_reg(add_player_view[0], add_player_view[1],
-                                       add_player_view[2], add_player_view[3],
-                                       add_player_view[4])
+                                    add_player_view[2], add_player_view[3],
+                                    add_player_view[4])
 
 class TournamentController:
-    def __init__(self, 
-                 t_name = "", 
-                 t_place = "", 
-                 t_date_start = "", 
-                 t_date_end = "", 
-                 t_tours = 4, 
-                 t_instances_rondes = 0, 
-                 t_players = [], 
-                 t_time = "", 
-                 t_desc= ""):
-       
-        self.t_name       = t_name
-        self.t_place      = t_place
-        self.t_date_start = t_date_start
-        self.t_date_end   = t_date_end
-        self.t_round      = t_tours
-        self.t_ronde      = t_instances_rondes
-        self.t_players    = t_players
-        self.t_time       = t_time
-        self.t_desc       = t_desc
+    def __init__(self,
+                 t_name="",
+                 t_place="",
+                 t_date_start="",
+                 t_date_end="",
+                 t_tours=4,
+                 t_instances_rondes=0,
+                 t_players=[],
+                 t_time="",
+                 t_desc=""):
 
-        self.tournoi_views      = TournamentViews()
-        self.tournoi_model      = TournamentModel()
-        self.tournoi_player     = PlayerModel()
+        self.t_name = t_name
+        self.t_place = t_place
+        self.t_date_start = t_date_start
+        self.t_date_end = t_date_end
+        self.t_round = t_tours
+        self.t_ronde = t_instances_rondes
+        self.t_players = t_players
+        self.t_time = t_time
+        self.t_desc = t_desc
+
+        self.tournoi_views = TournamentViews()
+        self.tournoi_model = TournamentModel()
+        self.tournoi_player = PlayerModel()
         self.tournoi_add_player = AddPlayerViews()
-        self.clmenu             = MenuViews()
+        self.clmenu = MenuViews()
 
         self.round_1 = []
         self.tournament_infos = []
         self.my_paires = []
 
     def infos_tournament_by_views(self):
-        tournament_infos        = TournamentViews().ask_tounament_infos()
-        self.t_name             = tournament_infos[0]
-        self.t_place            = tournament_infos[1]
-        self.t_date_start       = tournament_infos[2]
-        self.t_date_end         = tournament_infos[3]
-        self.t_tours            = tournament_infos[4]
+        tournament_infos = TournamentViews().ask_tounament_infos()
+        self.t_name = tournament_infos[0]
+        self.t_place = tournament_infos[1]
+        self.t_date_start = tournament_infos[2]
+        self.t_date_end = tournament_infos[3]
+        self.t_tours = tournament_infos[4]
         self.t_instances_rondes = tournament_infos[5]
-        self.t_players          = tournament_infos[6]
-        self.t_time             = tournament_infos[7]
-        self.t_desc             = tournament_infos[8]
-
-        return self.t_name, self.t_place, self.t_date_start, self.t_date_end, self.t_tours, self.t_instances_rondes, self.t_players, self.t_time, self.t_desc
+        self.t_players = tournament_infos[6]
+        self.t_time = tournament_infos[7]
+        self.t_desc = tournament_infos[8]
 
     def pairing_first_round(self, list_players):
         '''
         - pair for first round
         '''
-        #sorting suivant le rang
-        
-        tri = []
-        tri = sorted(list_players, key=lambda x:x['Rang']) #tri par rang
-        
-        length_to_split=int(len(tri)/2) #determine le nombre de tour pour la boucle
+        # sorting suivant le rang
 
-        for i in range(length_to_split): # fait les paires
+        tri = []
+        tri = sorted(list_players, key=lambda x: x['Rang'])  # tri par rang
+
+        # determine le nombre de tour pour la boucle
+        length_to_split = int(len(tri)/2)
+
+        for i in range(length_to_split):  # fait les paires
             paires_1 = [tri[i], tri[i+length_to_split]]
             self.my_paires.append(paires_1)
 
@@ -90,20 +91,30 @@ class TournamentController:
         mes_paires_temp = []
         self.my_paires = []
 
-        pair = sorted(list_players, key=lambda x:(x['Score'], x['Rang']))
+        pair = sorted(list_players, key=lambda x: (x['Score'], x['Rang']))
 
-        mod = 0 
-        for i in range(int(len(pair)/2)) :
+        mod = 0
+        for i in range(int(len(pair)/2)):
             mes_paires_temp.append(pair[mod+i])
             mod += 1
             mes_paires_temp.append(pair[mod+i])
-            self.my_paires.insert(i,mes_paires_temp)
+            self.my_paires.insert(i, mes_paires_temp)
             mes_paires_temp = []
 
         return self.my_paires
-    
+
+    def dateHourBegin(self):
+        date_hour_begin = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+
+        return date_hour_begin
+
+    def dateHourEnd(self):
+        date_hour_end = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+
+        return date_hour_end
+
     def my_tournament_console(self):
-        if self.tournoi_model.test_current_tournament() == False:
+        if not self.tournoi_model.test_current_tournament():
             self.infos_tournament_by_views()
             self.tournoi_write_tournament = TournamentModel(self.t_name,
                                                             self.t_place,
@@ -116,7 +127,8 @@ class TournamentController:
                                                             self.t_desc)
             self.tournoi_write_tournament.save_input_tournament_db_reg()
         else:
-            print("current round controller : ", self.tournoi_model.current_round())
+            print("current round controller : ",
+                  self.tournoi_model.current_round())
             print("test fichier : ", self.tournoi_model.test_current_tournament())
             infos = TournamentModel().retrieve_tournament()
             self.t_name = infos[0]["Name"]
@@ -128,114 +140,122 @@ class TournamentController:
             self.t_players = infos[0]["Players"]
             self.t_time = infos[0]["Time"]
             self.t_desc = infos[0]["Description"]
-        
+
         while self.tournoi_model.current_round() < int(self.t_instances_rondes):
 
-            print("ROUND ACTUEL : ", self.tournoi_model.current_round()+1)
+            # print("ROUND ACTUEL : ", self.tournoi_model.current_round()+1)
 
             if self.tournoi_model.current_round()+1 > 1:
                 # if existing round
-                players = self.tournoi_model.retrieve_round()
-                players_pairing = self.pairing_other_round(players)
-                players_round = self.tournoi_views.views_round_input(players_pairing, self.tournoi_model.current_round()+1)
-                self.tournoi_model.save_round_advance(players_round, self.tournoi_model.current_round()+1)
+                date_hour_bgn = self.dateHourBegin()  # save date hour begin in var
+                players = self.tournoi_model.retrieve_round()  # retrieve infos of existing round
+                players_pairing = self.pairing_other_round(players)  # make pairs
+                players_round = self.tournoi_views.views_round_input(
+                    players_pairing, self.tournoi_model.current_round()+1)  # display + input
+                date_hour_end = self.dateHourEnd()  # save date hour end in var
+                self.tournoi_model.save_round_advance(
+                    players_round, self.tournoi_model.current_round()+1, date_hour_bgn, date_hour_end)
                 print("----------------------------------------------------------")
                 input("---------| Appuyer sur 'Entrée' pour continuer |----------")
             else:
                 # if there is no round existing
+                date_hour_bgn = self.dateHourBegin()
                 players = self.tournoi_model.retrieve_players_input_information()
                 players_pairing = self.pairing_first_round(players)
-                players_round = self.tournoi_views.views_round_input(players_pairing, self.tournoi_model.current_round()+1)
-                self.tournoi_model.save_round_advance(players_round, self.tournoi_model.current_round()+1)
+                players_round = self.tournoi_views.views_round_input(
+                    players_pairing, self.tournoi_model.current_round()+1)
+                date_hour_end = self.dateHourEnd()
+                self.tournoi_model.save_round_advance(
+                    players_round, self.tournoi_model.current_round()+1, date_hour_bgn, date_hour_end)
+                print("----------------------------------------------------------")
+                input("---------| Appuyer sur 'Entrée' pour continuer |----------")
 
         self.tournoi_views.results()
         self.tournoi_model.save_finished_tournament()
-     
+
     def start(self):
-        use_gui = False
 
-        #choix_gui_console = typer.confirm("Utiliser l'interface graphique ?")
+        # choix_gui_console = typer.confirm("Utiliser l'interface graphique ?")
 
-        # hydrate tournoi retrieve avec les infos tournoi 
-        # si pas de tournoi créé, demande les infos et en créé un 
+        # hydrate tournoi retrieve avec les infos tournoi
+        # si pas de tournoi créé, demande les infos et en créé un
         # si tournoi, récupère les infos dans la db
 
         self.clmenu.appliTitle()
         choix_gui = self.clmenu.cl_gui()
 
         # choice between GUI or console views
-        if choix_gui == YES :
-            use_gui = True
+        if choix_gui == constants.YES:
             MainWindow.goMainWindow()
-        elif choix_gui == QUIT:
+        elif choix_gui == constants.QUIT:
             print("Fin du programme.")
             quit()
-        elif choix_gui == NO:
+        elif choix_gui == constants.NO:
             while True:
 
                 # main window
                 choix_j_t = self.clmenu.welcom()
 
                 # player window
-                if choix_j_t == PLAYERS:
+                if choix_j_t == constants.PLAYERS:
 
                     # player loop
-                    while choix_j_t == PLAYERS:
+                    while choix_j_t == constants.PLAYERS:
 
                         # Add player window
                         choix_j = self.clmenu.player_menu()
-                        if choix_j == ADD_PLAYER: 
+                        if choix_j == constants.ADD_PLAYER:
                             infos_player = self.tournoi_add_player.ask_player_infos()
-                            if infos_player == None:
+                            if infos_player is None:
                                 pass
                             else:
                                 self.tournoi_player.player_db_reg(infos_player[0],
-                                                                    infos_player[1],
-                                                                    infos_player[2],
-                                                                    infos_player[3],
-                                                                    infos_player[4]) 
+                                                                  infos_player[1],
+                                                                  infos_player[2],
+                                                                  infos_player[3],
+                                                                  infos_player[4])
 
-                        # see player window                       
-                        elif choix_j == SEE_PLAYER:
-                            self.tournoi_add_player.reg_players()  
-                        else: # back
+                        # see player window
+                        elif choix_j == constants.SEE_PLAYER:
+                            self.tournoi_add_player.reg_players()
+                        else:  # back
                             break
-                        
+
                 # tournament window
-                elif choix_j_t == TOURNAMENT:
-                    
+                elif choix_j_t == constants.TOURNAMENT:
+
                     # tournament loop
-                    while True: 
+                    while True:
                         choix_mt = self.clmenu.tournamentMenu()
-                        if choix_mt == NEW_TOURNAMENT:
-                            if self.tournoi_model.test_current_tournament() == True:
+                        if choix_mt == constants.NEW_TOURNAMENT:
+                            if self.tournoi_model.test_current_tournament() is True:
                                 choix_nm = self.clmenu.existing_tournament()
-                                if int(choix_nm) == ERASE_LAST_FOUND_TOURNAMENT:
+                                if int(choix_nm) == constants.ERASE_LAST_FOUND_TOURNAMENT:
                                     self.tournoi_model.clear_tournament()
                                     self.my_tournament_console()
                                 else:
-                                    pass 
-                            else:  
-                                self.my_tournament_console()   
-                        elif choix_mt == RETRIEVE_TOURNAMENT:
-                            if self.tournoi_model.test_current_tournament() == True:
+                                    pass
+                            else:
+                                self.my_tournament_console()
+                        elif choix_mt == constants.RETRIEVE_TOURNAMENT:
+                            if self.tournoi_model.test_current_tournament() is True:
                                 self.my_tournament_console()
                             else:
                                 self.clmenu.no_tournament()
 
                         # report window
-                        elif choix_mt == REPORT:
-                            while  True:
+                        elif choix_mt == constants.REPORT:
+                            while True:
 
                                 # player report window
                                 choix_r = self.clmenu.rapports()
-                                if choix_r == REPORT_PLAYERS:
+                                if choix_r == constants.REPORT_PLAYERS:
                                     choix_rj = self.clmenu.rapportsJoueurs()
-                                    if choix_rj == RP_ALL_PLAYERS_ALPHABETIC:
+                                    if choix_rj == constants.RP_ALL_PLAYERS_ALPHABETIC:
                                         self.clmenu.pAllPlayersAlphabetic()
-                                    elif choix_rj == RP_ALL_PLAYERS_RANK:
+                                    elif choix_rj == constants.RP_ALL_PLAYERS_RANK:
                                         self.clmenu.pAllPlayersClassment()
-                                    elif choix_rj == RP_ALL_PLAYERS_T:
+                                    elif choix_rj == constants.RP_ALL_PLAYERS_T:
 
                                         choix_rp = self.clmenu.pPlayerTournament()
                                         if choix_rp[0] == 1:
@@ -248,13 +268,13 @@ class TournamentController:
                                         break
 
                                 # tournament report window
-                                elif choix_r == REPORT_TOURNAMENT:
+                                elif choix_r == constants.REPORT_TOURNAMENT:
                                     choix_rt = self.clmenu.rapportTournois()
-                                    
-                                    if choix_rt[0] == RT_ALL_IR:
+
+                                    if choix_rt[0] == constants.RT_ALL_IR:
                                         self.clmenu.tMatchTournament()
                                         pass
-                                    elif choix_rt[0] == RT_ALL_ROUND:
+                                    elif choix_rt[0] == constants.RT_ALL_ROUND:
                                         self.clmenu.tToursTournament()
                                         pass
                                     else:

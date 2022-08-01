@@ -1,17 +1,16 @@
-from operator import getitem
-from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QLineEdit, QSpinBox, QDateEdit, QListView, QTextEdit, QLabel, QTableWidget, QTabWidget, QWidget, QVBoxLayout, QDoubleSpinBox
+from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QLineEdit, QSpinBox, QDateEdit, QTextEdit, QLabel, QTableWidget, QTabWidget, QDoubleSpinBox, QPlainTextEdit
 from PyQt6 import uic, QtWidgets
 from models.models import PlayerModel, TournamentModel, ReportModel
+import time
 import sys
-import os
 
 
 class ControllerGui(QMainWindow):
     def __init__(self) -> None:
-        super(ControllerGui,self).__init__()
+        super(ControllerGui, self).__init__()
 
-        self.tournoi_model      = TournamentModel()
-        self.tournoi_player     = PlayerModel()
+        self.tournoi_model = TournamentModel()
+        self.tournoi_player = PlayerModel()
 
         self.list_players = self.tournoi_model.retrieve_players_input_information()
         self.list_player_other_round = self.tournoi_model.retrieve_round()
@@ -28,9 +27,9 @@ class ControllerGui(QMainWindow):
         # tri par rang
         tri = sorted(self.list_players, key=lambda x: x['Rang'])
 
-        length_to_split = int(len(tri)/2) #determine le nombre de tour pour la boucle
+        length_to_split = int(len(tri)/2)  # determine le nombre de tour pour la boucle
 
-        for i in range(length_to_split):#  fait les paires
+        for i in range(length_to_split):  # fait les paires
             paires_1 = [tri[i], tri[i+length_to_split]]
             self.my_paires.append(paires_1)
 
@@ -44,14 +43,14 @@ class ControllerGui(QMainWindow):
         mes_paires_temp = []
         self.my_paires = []
 
-        pair = sorted(self.list_player_other_round, key = lambda x : (x['Score'], x['Rang']))
+        pair = sorted(self.list_player_other_round, key=lambda x: (x['Score'], x['Rang']))
 
-        mod = 0 
+        mod = 0
         for i in range(int(len(pair)/2)):
             mes_paires_temp.append(pair[mod+i])
             mod += 1
             mes_paires_temp.append(pair[mod+i])
-            self.my_paires.insert(i,mes_paires_temp)
+            self.my_paires.insert(i, mes_paires_temp)
             mes_paires_temp = []
 
         return self.my_paires
@@ -73,7 +72,7 @@ class MainWindow(QMainWindow):
         self.btn_tournaments.clicked.connect(self.btnTournaments)
         self.btn_quit.clicked.connect(self.btnQuit)
 
-        #Show the app
+        # Show the app
         self.show()
 
     def btnPlayers(self):
@@ -88,28 +87,28 @@ class MainWindow(QMainWindow):
 
     def btnQuit(self):
         self.close()
-        
+
     @staticmethod
     def goMainWindow():
-        app = QApplication(sys.argv)#instantiate
+        app = QApplication(sys.argv)  # instantiate
 
         main_window = MainWindow()
 
-        sys.exit(app.exec())#execute
+        sys.exit(app.exec())  # execute
 
 class PlayersWindow(QMainWindow):
     def __init__(self):
         super(PlayersWindow, self).__init__()
 
-        # Load the UI file
+    # Load the UI file
         uic.loadUi('./views/qt_ux/players.ui', self)
 
-        # Define widgets
+    # Define widgets
         self.btn_addplayers = self.findChild(QPushButton, "AddPlayer")
         self.btn_seeplayers = self.findChild(QPushButton, "ListPlayers")
         self.btn_back = self.findChild(QPushButton, "Back")
 
-        # Connecting to actions
+    # Connecting to actions
         self.btn_addplayers.clicked.connect(self.btnAddPlayers)
         self.btn_seeplayers.clicked.connect(self.btnSeePlayers)
         self.btn_back.clicked.connect(self.btnBack)
@@ -129,14 +128,6 @@ class PlayersWindow(QMainWindow):
         self.t_to_back_main.show()
         self.close()
 
-    @staticmethod
-    def goPlayersWindow():
-        app = QApplication(sys.argv)#instantiate
-
-        main_window = PlayersWindow()
-
-        sys.exit(app.exec())#execute
-        
 class AddPlayers(QMainWindow):
     def __init__(self):
         super(AddPlayers, self).__init__()
@@ -173,13 +164,9 @@ class AddPlayers(QMainWindow):
         self.close()
 
     def send_add_player_infos(self):
-        """
-        Ajoute un joueur dans la DB depuis la GUI
-        """
-
-        if self.rbtn_gender_h.isChecked() == True:
+        if self.rbtn_gender_h.isChecked() is True:
             self.gender = "H"
-        elif self.rbtn_gender_f.isChecked() == True:
+        elif self.rbtn_gender_f.isChecked() is True:
             self.gender = "F"
         else:
             self.gender = "N"
@@ -187,12 +174,11 @@ class AddPlayers(QMainWindow):
         self.sb_rank = str("{:04d}".format(int(self.sb_rank.text())))
 
         PlayerModel().player_db_reg(
-            self.line_l_name.text(), 
+            self.line_l_name.text(),
             self.line_f_name.text(),
             self.date_bday.text(),
             self.gender,
-            self.sb_rank
-            )
+            self.sb_rank)
 
 class PlayerList(QMainWindow):
     def __init__(self):
@@ -207,12 +193,12 @@ class PlayerList(QMainWindow):
 
         # Connecting to actions
         self.btn_back.clicked.connect(self.btnBack)
-        
+
         # List Widget
         self.get_data()
 
     def get_data(self):
-        players = TournamentModel().retrieve_all_player_from_db() 
+        players = TournamentModel().retrieve_all_player_from_db()
         row = 0
         self.tableWidget.setRowCount(len(players))
         for p in players:
@@ -230,7 +216,7 @@ class PlayerList(QMainWindow):
 
 class Tournament(QMainWindow):
     def __init__(self):
-        super(Tournament,self).__init__()
+        super(Tournament, self).__init__()
 
         # Load the UI file
         uic.loadUi('./views/qt_ux/tournament.ui', self)
@@ -248,9 +234,13 @@ class Tournament(QMainWindow):
         self.btn_reports.clicked.connect(self.btnReports)
         self.btn_back.clicked.connect(self.btnBack)
 
-        #Display message if there is an existing tournament
+        # state
+        self.btn_resume_tournament.setEnabled(False)
+
+        # Display message if there is an existing tournament
         if TournamentModel().test_current_tournament():
             self.lbl_existing_t.setText("Un tournoi existant à été trouvé")
+            self.btn_resume_tournament.setEnabled(True)
 
     def btnNewT(self):
         self.t_to_newtournament = NewTournament()
@@ -274,7 +264,7 @@ class Tournament(QMainWindow):
 
 class NewTournament(QMainWindow):
     def __init__(self):
-        super(NewTournament,self).__init__()
+        super(NewTournament, self).__init__()
 
         # Variables
         self.time = ""
@@ -313,8 +303,8 @@ class NewTournament(QMainWindow):
         TournamentModel().clear_tournament()
 
         validation = 1
-        
-        try: 
+
+        try:
             self.player_to_db(self.lplayer.my_players)
         except AttributeError:
             self.lbl_info.setText("Veuillez remplir tous les champs avant de valider")
@@ -323,9 +313,9 @@ class NewTournament(QMainWindow):
         if validation == 1:
             id_players = self.player_to_db(self.lplayer.my_players)
 
-            if self.rbtn_blitz.isChecked() == True:
+            if self.rbtn_blitz.isChecked() is True:
                 self.time = "Blitz"
-            elif self.rbtn_bullet.isChecked() == True:
+            elif self.rbtn_bullet.isChecked() is True:
                 self.time = "Bullet"
             else:
                 self.time = "Coup rapide"
@@ -346,33 +336,31 @@ class NewTournament(QMainWindow):
             self.bplayer = Begin()
             self.bplayer.show()
             self.close()
-         
 
     def btnBack(self):
         self.t_to_back_tournament = Tournament()
         self.t_to_back_tournament.show()
         self.close()
 
-   
-    def player_to_db(self, players_lst_from_gui:dict):
+    def player_to_db(self, players_lst_from_gui: dict):
         """
-        Retourne les 'id_player' des joueurs selectionnés
+        Return id players to db
         """
         id_player = []
-    
+
         all_players = TournamentModel().retrieve_all_player_from_db()
 
-        for i,n in zip(players_lst_from_gui.items(), all_players):
-            if i[1] == True:
+        for i, n in zip(players_lst_from_gui.items(), all_players):
+            if i[1] is True:
                 id_player.append(n['id_player'])
 
         return id_player
-             
+
 class PlayerListSel(QMainWindow):
     def __init__(self):
         super(PlayerListSel, self).__init__()
 
-        #variables
+        # variables
         self.players = TournamentModel().retrieve_all_player_from_db()
         self.element_true = 0
         self.my_players = {}
@@ -394,13 +382,13 @@ class PlayerListSel(QMainWindow):
         # List Widget
         self.get_data()
 
-        #sel_table = QTableWidget()
+        # sel_table = QTableWidget()
         self.list_db.selectionModel().selectionChanged.connect(self.on_selectionChanged)
 
     def on_selectionChanged(self, selected, deselected):
         a = None
         b = None
-        self.element_true = 0        
+        self.element_true = 0
 
         for ix in selected.indexes():
             a = ix.row()
@@ -408,15 +396,15 @@ class PlayerListSel(QMainWindow):
         for ix in deselected.indexes():
             b = ix.row()
 
-        self.my_players[a]=True
-        self.my_players[b]=False
+        self.my_players[a] = True
+        self.my_players[b] = False
 
-        del self.my_players[None]#supprime la dernière clé qui est un none
+        del self.my_players[None]  # del last key egual to none
 
-        # retourn le nb d'éléments selectionnés
+        # return nb of select elements
         for i in self.my_players:
             if self.my_players[i] is True:
-                self.element_true +=1
+                self.element_true += 1
 
         self.lbl_player_sel.setText(f"{self.element_true} éléments sélectionnés sur 8")
 
@@ -425,7 +413,7 @@ class PlayerListSel(QMainWindow):
         else:
             self.btn_validate.setFlat(False)
 
-    def get_data(self): 
+    def get_data(self):
         row = 0
         self.tableWidget.setRowCount(len(self.players))
         for p in self.players:
@@ -443,7 +431,7 @@ class PlayerListSel(QMainWindow):
 
 class Begin(QMainWindow):
     def __init__(self):
-        super(Begin,self).__init__()
+        super(Begin, self).__init__()
 
     # Load the UI file
         uic.loadUi('./views/qt_ux/begin.ui', self)
@@ -455,14 +443,14 @@ class Begin(QMainWindow):
         self.btn_validate.clicked.connect(self.btnBegin)
 
     def btnBegin(self):
-        
+
         self.n = QWRoundEmpty()
         self.n.show()
         self.close()
-  
+
 class QWRound(QMainWindow):
     def __init__(self):
-        super(QWRound,self).__init__()
+        super(QWRound, self).__init__()
 
         self.validate_round = False
 
@@ -475,14 +463,14 @@ class QWRound(QMainWindow):
         self.lbl_player_2 = self.findChild(QLabel, "label_4")
         self.s_p_1 = self.findChild(QDoubleSpinBox, "doubleSpinBox_3")
         self.s_p_2 = self.findChild(QDoubleSpinBox, "doubleSpinBox_4")
-        self.btn_validate_round = self.findChild(QPushButton, "pushButton")
+        self.btn_v_round = self.findChild(QPushButton, "pushButton")
 
     # Connecting to actions
-        self.btn_validate_round.setCheckable(True)
-        self.btn_validate_round.clicked.connect(self.btnValidateRound)
-        
-    def btnValidateRound(self):
-        if self.btn_validate_round.isChecked(): 
+        self.btn_v_round.setCheckable(True)
+        self.btn_v_round.clicked.connect(self.btn_validate_round)
+
+    def btn_validate_round(self):
+        if self.btn_v_round.isChecked():
             btn = True
             self.s_p_1.setEnabled(False)
             self.s_p_2.setEnabled(False)
@@ -491,11 +479,11 @@ class QWRound(QMainWindow):
             self.s_p_1.setEnabled(True)
             self.s_p_2.setEnabled(True)
         return btn
-           
+
 class QWRoundEmpty(QMainWindow):
     def __init__(self):
-        super(QWRoundEmpty,self).__init__()
-    
+        super(QWRoundEmpty, self).__init__()
+
     # Variables
         self.tournament_models = TournamentModel()
         self.players_models = PlayerModel()
@@ -504,9 +492,13 @@ class QWRoundEmpty(QMainWindow):
         self.rondes = self.tournament_models.retrieve_tournament()[0]["Instance_Rondes"]
         self.rounds = self.tournament_models.retrieve_tournament()[0]["Match"]
         self.test_round = self.tournament_models.test_current_round()
-        
+
+        self.date_hour_bgn = ""
+        self.date_hour_end = ""
+
         inc = 0
-        if self.ctr_gui.actual_round < self.rounds:
+
+        if self.ctr_gui.actual_round < self.rondes:
 
         # Load the UI file
             uic.loadUi('./views/qt_ux/round_empty.ui', self)
@@ -520,22 +512,24 @@ class QWRoundEmpty(QMainWindow):
         # Connecting to actions
             self.tab_match.currentChanged.connect(self.tabChanged)
             self.btn_validate_all_rondes.clicked.connect(self.btnValidatAllRondes)
-            
-        # Instancing interface
 
-            if self.test_round == False: # si pas de round
+        # Instancing interface
+            self.date_hour_bgn = self.dateHourBegin()
+
+            if self.test_round is False:  # si pas de round
                 self.my_players = self.ctr_gui.pairing_first_round()
             else:
                 self.my_players = self.ctr_gui.pairing_other_round()
+            for i in range(self.rounds):
 
-            for i in range(self.rondes):
+                self.tab_match.addTab(QWRound(), f"Match {i+1}")
 
-                self.tab_match.addTab(QWRound(), f"Match {i+1}") 
+                self.tab_match.widget(i).lbl_round.setText(f"Round {self.ctr_gui.actual_round+1}")  # set round number
 
-                self.tab_match.widget(i).lbl_round.setText(f"Round {self.ctr_gui.actual_round+1}") #set round number
-
-                self.tab_match.widget(i).lbl_player_1.setText(f"{self.my_players[i][0]['Prenom']}\nScore : {self.my_players[i][0]['Score']}") #set name p1
-                self.tab_match.widget(i).lbl_player_2.setText(f"{self.my_players[i][1]['Prenom']}\nScore : {self.my_players[i][1]['Score']}") #set name p2
+                self.tab_match.widget(i).lbl_player_1.setText(
+                    f"{self.my_players[i][0]['Prenom']}\nScore : {self.my_players[i][0]['Score']}")  # set name p1
+                self.tab_match.widget(i).lbl_player_2.setText(
+                    f"{self.my_players[i][1]['Prenom']}\nScore : {self.my_players[i][1]['Score']}")  # set name p2
 
                 inc += 2
         else:
@@ -545,31 +539,44 @@ class QWRoundEmpty(QMainWindow):
             self.t_to_finish.show()
             self.close()
 
+    def dateHourBegin(self):
+        date_hour_begin = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+
+        return date_hour_begin
+
+    def dateHourEnd(self):
+        date_hour_end = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+
+        return date_hour_end
+
     def tabChanged(self):
         ind = self.tab_match.currentIndex()
-        ind_2 = self.tab_match.widget(ind).btnValidateRound()
+        ind_2 = self.tab_match.widget(ind).btn_validate_round()
         print(ind_2)
-        
+
         return ind
 
     def btnValidatAllRondes(self):
         lst_val = []
 
-        for i in range(self.rondes):
-            lst_val.append(self.tab_match.widget(i).btnValidateRound())
+        for i in range(self.rounds):
+            lst_val.append(self.tab_match.widget(i).btn_validate_round())
 
-        if all(lst_val): # if the 4 buttons are validate 
+        if all(lst_val):  # if the 4 buttons are validate
 
-            for i in range(self.rondes):  
-                score_p1 = self.tab_match.widget(i).s_p_1.text().replace(',','.')
-                score_p2 = self.tab_match.widget(i).s_p_2.text().replace(',','.')
+            self.date_hour_end = self.dateHourEnd()
 
-                # change score for the round 
+            for i in range(self.rounds):
+                score_p1 = self.tab_match.widget(i).s_p_1.text().replace(',', '.')
+                score_p2 = self.tab_match.widget(i).s_p_2.text().replace(',', '.')
+
+                # change score for the round
                 self.my_players[i][0]['Score'] = self.my_players[i][0]['Score'] + float(score_p1)
                 self.my_players[i][1]['Score'] = self.my_players[i][1]['Score'] + float(score_p2)
 
-            self.tournament_models.save_round_advance(self.my_players, self.ctr_gui.actual_round+1)
-                
+            self.tournament_models.save_round_advance(
+                self.my_players, self.ctr_gui.actual_round+1, self.date_hour_bgn, self.date_hour_end)
+
             self.t_to_round = QWRoundEmpty()
             self.t_to_round.show()
             self.close()
@@ -581,7 +588,7 @@ class QWRoundEmpty(QMainWindow):
 
 class Results(QMainWindow):
     def __init__(self):
-        super(Results,self).__init__()
+        super(Results, self).__init__()
 
     # Variables
         self.tournament = TournamentModel()
@@ -606,7 +613,7 @@ class Results(QMainWindow):
         self.t_to_tournament.show()
         self.close()
 
-    def getData(self): 
+    def getData(self):
         row = 0
         self.tableWidget.setRowCount(len(self.tournament_infos))
         for p in self.tournament_infos:
@@ -618,7 +625,7 @@ class Results(QMainWindow):
 
 class Resume(QMainWindow):
     def __init__(self):
-        super(Resume,self).__init__()
+        super(Resume, self).__init__()
 
     # Load the UI file
         uic.loadUi('./views/qt_ux/resume.ui', self)
@@ -636,7 +643,7 @@ class Resume(QMainWindow):
 
 class ReportMain(QMainWindow):
     def __init__(self):
-        super(ReportMain,self).__init__()
+        super(ReportMain, self).__init__()
     # set variables
         self.players = TournamentModel().retrieve_all_player_from_db()
         self.players = sorted(self.players, key=lambda x: x['Nom'])
@@ -647,7 +654,6 @@ class ReportMain(QMainWindow):
         self.my_tournament = []
         for i in range(len(self.tournament)):
             self.my_tournament.append(False)
-        print(self.my_tournament)
 
         self.a = -1
         self.b = -1
@@ -667,8 +673,10 @@ class ReportMain(QMainWindow):
         self.btn_tournament_rondes = self.findChild(QPushButton, "pushButton_4")
         self.btn_tournament_match = self.findChild(QPushButton, "pushButton_5")
 
+        self.btn_back = self.findChild(QPushButton, "pushButton")
+
     # List Widget
-        
+
         self.get_data_player_table()
         self.get_data_tournament_table()
 
@@ -680,21 +688,23 @@ class ReportMain(QMainWindow):
         self.btn_tournament_rondes.clicked.connect(self.btnRondes)
         self.btn_tournament_match.clicked.connect(self.btnMatch)
 
-    #sel_table = QTableWidget()
+        self.btn_back.clicked.connect(self.btnBack)
+
+    # sel_table = QTableWidget()
         self.table_tournament.selectionModel().selectionChanged.connect(self.on_selectionChanged)
-    
+
     def rbtnChange(self):
-        if self.rbtn_alphabetic.isChecked() == True:
+        if self.rbtn_alphabetic.isChecked() is True:
             self.players = sorted(self.players, key=lambda x: x['Nom'])
             self.get_data_player_table()
         else:
             self.players = sorted(self.players, key=lambda x: x['Rang'], reverse=True)
             self.get_data_player_table()
 
-    #get data first table
+    # get data first table
     def get_data_player_table(self):
         row = 0
-        
+
         self.tableWidget.setRowCount(len(self.players))
         for p in self.players:
             self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(p['Nom']))
@@ -703,10 +713,10 @@ class ReportMain(QMainWindow):
             self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(p['Genre']))
             self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(p['Rang']))
             row += 1
-            
+
     def get_data_tournament_table(self):
         row = 0
-        
+
         self.tableWidget_2.setRowCount(len(self.tournament))
         for p in self.tournament:
             self.tableWidget_2.setItem(row, 0, QtWidgets.QTableWidgetItem(p['Name']))
@@ -714,7 +724,7 @@ class ReportMain(QMainWindow):
             self.tableWidget_2.setItem(row, 2, QtWidgets.QTableWidgetItem(p['Date_start']))
             row += 1
 
-    def on_selectionChanged(self, selected, deselected):   
+    def on_selectionChanged(self, selected, deselected):  # return value of selected line
 
         for ix in selected.indexes():
             self.a = ix.row()
@@ -722,31 +732,34 @@ class ReportMain(QMainWindow):
         for ix in deselected.indexes():
             self.b = ix.row()
 
-        self.my_tournament[self.a]=True
-        self.my_tournament[self.b]=False
+        self.my_tournament[self.a] = True
+        self.my_tournament[self.b] = False
 
-        print(type(self.a), self.a)
+        return self.a
 
     def btnPlayer(self):
-        self.t_to_report_player = RPlayersTournament()
+        self.t_to_report_player = RPlayersTournament(self.a)
         self.t_to_report_player.show()
 
     def btnRondes(self):
-        pass
+        self.t_to_rondes = Rondes(self.a)
+        self.t_to_rondes.show()
 
     def btnMatch(self):
-        pass
-        
+        self.t_to_matchs = Matchs(self.a)
+        self.t_to_matchs.show()
+
+    def btnBack(self):
+        self.t_to_tournament = Tournament()
+        self.t_to_tournament.show()
+        self.close()
+
 class RPlayersTournament(QMainWindow):
-    def __init__(self):
-        super(RPlayersTournament,self).__init__()
+    def __init__(self, value_a):
+        super(RPlayersTournament, self).__init__()
 
-        id_match_sel = ReportMain().my_tournament
-        print('coucou', id_match_sel)
-        self.retrieve_infos = ReportModel().finishedTournamentNb(id_match_sel)
+        self.retrieve_infos = ReportModel().finishedTournamentNb(value_a+1)
         self.slice_r_i = self.retrieve_infos[1][-8:]
-
-        
 
     # Load the UI file
         uic.loadUi('./views/qt_ux/report_players_tournament.ui', self)
@@ -759,6 +772,8 @@ class RPlayersTournament(QMainWindow):
 
         self.btn_back = self.findChild(QPushButton, "pushButton")
 
+        self.lbl_tournament_name = self.findChild(QLabel, "label_2")
+
     # Connecting to actions
         self.rbtn_alphabetic.clicked.connect(self.rbtnChange)
         self.rbtn_rank.clicked.connect(self.rbtnChange)
@@ -768,8 +783,10 @@ class RPlayersTournament(QMainWindow):
     # List Widget
         self.get_data_player_table()
 
+        self.lbl_tournament_name.setText(self.retrieve_infos[0][0])
+
     def rbtnChange(self):
-        if self.rbtn_alphabetic.isChecked() == True:
+        if self.rbtn_alphabetic.isChecked() is True:
             self.slice_r_i = sorted(self.slice_r_i, key=lambda x: x[0])
             self.get_data_player_table()
         else:
@@ -778,7 +795,7 @@ class RPlayersTournament(QMainWindow):
 
     def get_data_player_table(self):
         row = 0
-        
+
         self.tableWidget.setRowCount(8)
         for p in self.slice_r_i:
             self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(p[0]))
@@ -790,7 +807,80 @@ class RPlayersTournament(QMainWindow):
             row += 1
 
     def btnBack(self):
-        self.close
+        self.close()
 
+class Rondes(QMainWindow):
+    def __init__(self, value_a):
+        super(Rondes, self).__init__()
 
-            
+    # Variables
+        infos_tournoi = ReportModel().finishedTournamentNb(value_a+1)
+
+        report_rondes_text = ""
+
+        inc_01 = 1
+
+    # Load the UI file
+        uic.loadUi('./views/qt_ux/rondes.ui', self)
+
+    # Define widgets
+        self.lbl_name_tournament_rondes = self.findChild(QLabel, "label_2")
+        self.lbl_rondes = self.findChild(QPlainTextEdit, "plainTextEdit")
+
+        self.btn_close = self.findChild(QPushButton, "pushButton")
+
+    # Connecting to actions
+        self.btn_close.clicked.connect(self.btnClose)
+
+        self.lbl_name_tournament_rondes.setText(infos_tournoi[0][0])
+
+        for i in range(len(infos_tournoi[1])):
+            if i % (infos_tournoi[0][4]*2) == 0:
+                report_rondes_text = report_rondes_text + f"───────┤ Round {inc_01} ├───────\n"
+                inc_01 += 1
+            report_rondes_text = report_rondes_text + f"{infos_tournoi[1][i][1]} {infos_tournoi[1][i][0]} avec un score de {infos_tournoi[1][i][5]} \n"
+
+        print("info tournoi : ", report_rondes_text)
+
+        self.lbl_rondes.setPlainText(report_rondes_text)
+
+    def btnClose(self):
+        self.close()
+
+class Matchs(QMainWindow):
+    def __init__(self, value_a):
+        super(Matchs, self).__init__()
+
+    # Variables
+        infos_tournoi = ReportModel().finishedTournamentNb(value_a+1)
+
+        report_matchs_text = ""
+
+        inc_01 = 1
+        inc_02 = 0
+
+    # Load the UI file
+        uic.loadUi('./views/qt_ux/Matchs.ui', self)
+
+    # Define widgets
+        self.lbl_name_tournament_rondes = self.findChild(QLabel, "label_2")
+        self.lbl_rondes = self.findChild(QPlainTextEdit, "plainTextEdit")
+
+        self.btn_close = self.findChild(QPushButton, "pushButton")
+
+    # Connecting to actions
+        self.btn_close.clicked.connect(self.btnClose)
+
+        self.lbl_name_tournament_rondes.setText(infos_tournoi[0][0])
+
+        for i in range(int(len(infos_tournoi[1])/2)):
+            if i % (infos_tournoi[0][4]) == 0:
+                report_matchs_text = report_matchs_text + f"───────┤ Round {inc_01} ├───────\n"
+                inc_01 += 1
+            report_matchs_text = report_matchs_text + f"{infos_tournoi[1][inc_02][1]} {infos_tournoi[1][inc_02][0]} VS {infos_tournoi[1][inc_02+1][1]} {infos_tournoi[1][inc_02+1][0]} \n"
+            inc_02 += 2
+
+        self.lbl_rondes.setPlainText(report_matchs_text)
+
+    def btnClose(self):
+        self.close()

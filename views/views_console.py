@@ -77,19 +77,19 @@ class AddPlayerViews:
         print("----------------------------------------------------------")
 
         self.l_name = input(" | - Entrez nom : ")
-        self.l_name = self.test_alpha(self.l_name)
+        self.l_name = self.test_alpha(self.l_name)  # verification
 
         self.f_name = input(" | - Entrez prénom : ")
-        self.f_name = self.test_alpha(self.f_name)
+        self.f_name = self.test_alpha(self.f_name)  # verification
 
         self.b_day = input(" | - Date d'anniversaire (jj/mm/aaaa): ")
-        self.b_day = self.test_date(self.b_day)
+        self.b_day = self.test_date(self.b_day)  # verification
 
         self.gender = input(" | - Genre (H/F/N) : ")
-        self.gender = self.test_alpha_one_letter(self.gender)
+        self.gender = self.test_alpha_one_letter(self.gender)  # verification
 
         self.rank = input(" | - Rang : ")
-        self.rank = self.test_num(self.rank, 0, 3000)
+        self.rank = self.test_num(self.rank, 0, 3000)  # verification
         self.rank = str("{:04d}".format(int(self.rank)))
 
         print(" -------------------------------------------------------- ")
@@ -99,7 +99,7 @@ class AddPlayerViews:
         print("| - 2 : Retour")
         print("| ------------------------------------------------------- ")
         val_player = input("| - Votre choix : ")
-        val_player = self.test_num(val_player, 1, 2)
+        val_player = self.test_num(val_player, 1, 2)  # verification
 
         if int(val_player) == 1:
             MenuViews.cls()
@@ -157,6 +157,55 @@ class TournamentViews:
 
         self.id_player = PlayerModel()
 
+    def test_num(self, mon_input, min, max):
+        """
+        - Test numeric value in the interval
+        """
+        while True:
+            if mon_input.isdigit() and int(mon_input) >= min and int(mon_input) <= max:
+                return int(mon_input)
+            else:
+                print("----------------------------------------------------------")
+                mon_input = input(f"--| Entrez un chiffre valide compris entre {min} et {max} : ")
+
+    def test_tournament(self, mon_input):
+        """
+        - Test value in tournament
+        """
+        while True:
+            if mon_input == '0' or mon_input == '0.5' or mon_input == '1':
+                return float(mon_input)
+            else:
+                print("----------------------------------------------------------")
+                mon_input = input("--| Entrez une valeur valide ('0'/'0.5'/'1') : ")
+
+    def test_alpha(self, mon_input):
+        """
+        - Test alphabetic string
+        """
+        while True:
+            mon_input_modif = mon_input.replace(" ", "")
+            if mon_input_modif.isalpha():
+                return mon_input
+            else:
+                print("----------------------------------------------------------")
+                mon_input = input("--| N'entrez que des lettres svp : ")
+
+    def test_date(self, mon_input):
+        """
+        - Test date format
+        """
+        while True:
+            if len(mon_input) == 10 and mon_input.count("/") == 2:
+                if mon_input.replace("/", "").isdigit() is True:
+                    return mon_input
+                else:
+                    print("----------------------------------------------------------")
+                    mon_input = input("Entrez une date au format 'jj/mm/aaaa' : ")
+            else:
+                print("----------------------------------------------------------")
+                mon_input = input("Entrez une date au format 'jj/mm/aaaa' : ")
+
     def ask_tounament_infos(self):
         self.cls()
         print(TournamentModel().current_round())
@@ -176,15 +225,29 @@ class TournamentViews:
         print("----------------------------------------------------------")
 
         self.t_name = input(" | - Entrez nom : ")
+        self.t_name = self.test_alpha(self.t_name)  # verification
+
         self.t_place = input(" | - Entrez lieu : ")
-        self.t_date_start = input(" | - Entrez date de début : ")
-        self.t_date_end = input(" | - Entrez date de fin : ")
+        self.t_place = self.test_alpha(self.t_place)  # verification
+
+        self.t_date_start = input(" | - Entrez date de début 'jj/mm/aaaa': ")
+        self.t_date_start = self.test_date(self.t_date_start)  # verification
+
+        self.t_date_end = input(" | - Entrez date de fin 'jj/mm/aaaa': ")
+        self.t_date_end = self.test_date(self.t_date_end)  # verification
+
         self.t_tours = 4
+
         self.t_instances_rondes = input(" | - Entrez instances rondes : ")
+        self.t_instances_rondes = self.test_num(self.t_instances_rondes, 0, 10)  # verification
+
         print(" |   - Test : utiliser une liste déjà faite ?:")
         print(" | 1 - Utiliser liste déjà faite")
         print(" | 2 - Faire ma liste")
+
         cp = input(" |   - Entrez votre choix : ")
+        cp = self.test_num(cp, 1, 2)  # verification
+
         if int(cp) == 1:
             self.t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720,
                               2123311234976, 1988607754144, 1384106246048, 2187293245344]
@@ -192,14 +255,16 @@ class TournamentViews:
             for i in range(8):
                 j_temp = input(
                     f" | - Entrez le N° joueur du joueur N°:{i+1}/8 : ")
+                j_temp = self.test_num(j_temp, 1, len(TournamentModel().retrieve_all_player_from_db()))
                 self.t_players.append(int(j_temp))
-            print(self.t_players)
-            self.t_players = self.id_player.retrievePlayerFromNumber(
-                self.t_players)
-            print(self.t_players)
+
+            self.t_players = self.id_player.retrievePlayerFromNumber(self.t_players)
 
         self.t_time = input(" | - Bullet/Blitz/coup rapide : ")
+        self.t_time = self.test_alpha(self.t_time)  # verification
+
         self.t_desc = input(" | - Entrez description : ")
+        self.t_desc = self.test_alpha(self.t_desc)  # verification
 
         return self.t_name, self.t_place, self.t_date_start, self.t_date_end, self.t_tours, self.t_instances_rondes, self.t_players, self.t_time, self.t_desc
 
@@ -229,10 +294,15 @@ class TournamentViews:
                   sorted_paires[i][0]['Prenom'], " |--- VS ---| ",
                   sorted_paires[i][1]['Nom'],
                   sorted_paires[i][1]['Prenom'])
+
             score_p1 = input(
-                f"| - Score joueur {sorted_paires[i][0]['Nom']} {sorted_paires[i][0]['Prenom']}: ")
+                f"| - Score joueur {sorted_paires[i][0]['Nom']} {sorted_paires[i][0]['Prenom']} ('0'/'0.5'/'1'): ")
+            score_p1 = self.test_tournament(score_p1)  # verification
+
             score_p2 = input(
-                f"| - Score joueur {sorted_paires[i][1]['Nom']} {sorted_paires[i][1]['Prenom']}: ")
+                f"| - Score joueur {sorted_paires[i][1]['Nom']} {sorted_paires[i][1]['Prenom']} ('0'/'0.5'/'1'): ")
+            score_p2 = self.test_tournament(score_p2)  # verification
+
             sorted_paires[i][0]['Score'] = sorted_paires[i][0]['Score'] + \
                 float(score_p1)
             sorted_paires[i][1]['Score'] = sorted_paires[i][1]['Score'] + \
@@ -701,7 +771,7 @@ class MenuViews:
             print("--|")
             print(f"--|--------------------| Tour N°{i+1} |-----------------------")
             print(f"--|----------| Début : {infos_tournoi[2][inc_02]} |--------------")
-            for n in range(infos_tournoi[0][5]*2):
+            for n in range(infos_tournoi[0][4]*2):
                 print("--|", infos_tournoi[1][inc_01][1], '', infos_tournoi[1][inc_01][0],
                       " avec un score de ", infos_tournoi[1][inc_01][5])
                 inc_01 += 1
