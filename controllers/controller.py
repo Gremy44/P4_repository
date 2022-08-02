@@ -1,4 +1,4 @@
-from models.models import PlayerModel, TournamentModel
+from models.models import PlayerModel, TournamentModel, ReportModel
 from views.views_console import AddPlayerViews, MenuViews, TournamentViews
 from views.views_gui import AddPlayers, MainWindow
 import controllers.constants as constants
@@ -76,7 +76,7 @@ class AddPlayerController:
         pass
 
     def add_player(self):  # add new player to db
-        add_player_view = AddPlayerViews()
+        add_player_view = MenuViews()
         infos_player = add_player_view.ask_player_infos()
         PlayerModel().player_db_reg(infos_player[0], infos_player[1],
                                     infos_player[2], infos_player[3],
@@ -93,9 +93,12 @@ class TournamentController:
     def __init__(self):
         self.tournoi_views = TournamentViews()
         self.tournoi_model = TournamentModel()
+        self.tournoi_report = ReportModel()
         self.tournoi_player = PlayerModel()
         self.tournoi_add_player = AddPlayerViews()
         self.clmenu = MenuViews()
+
+        self.infos_match = self.tournoi_model.retrieve_round()
 
     def infos_tournament_by_views(self):
         tournament_infos = TournamentViews().ask_tounament_infos()
@@ -109,7 +112,7 @@ class TournamentController:
         self.t_time = tournament_infos[7]
         self.t_desc = tournament_infos[8]
 
-    def pairing_first_round(self, list_players):
+    def pairing_first_round(self):
         '''
         - pair for first round
         '''
@@ -118,7 +121,7 @@ class TournamentController:
         # sorting suivant le rang
 
         tri = []
-        tri = sorted(list_players, key=lambda x: x['Rang'])  # tri par rang
+        tri = sorted(self.infos_match, key=lambda x: x['Rang'])  # tri par rang
 
         # determine le nombre de tour pour la boucle
         length_to_split = int(len(tri) / 2)
@@ -129,14 +132,14 @@ class TournamentController:
 
         return my_paires
 
-    def pairing_other_round(self, list_players):
+    def pairing_other_round(self):
         '''
         - pair for other round
         '''
         mes_paires_temp = []
         my_paires = []
 
-        pair = sorted(list_players, key=lambda x: (x['Score'], x['Rang']))
+        pair = sorted(self.infos_match, key=lambda x: (x['Score'], x['Rang']))
 
         mod = 0
         for i in range(int(len(pair) / 2)):
@@ -195,8 +198,7 @@ class TournamentController:
             if self.tournoi_model.current_round() + 1 > 1:
                 # if existing round
                 date_hour_bgn = self.dateHourBegin()  # save date hour begin in var
-                players = self.tournoi_model.retrieve_round()  # retrieve infos of existing round
-                players_pairing = self.pairing_other_round(players)  # make pairs
+                players_pairing = self.pairing_other_round()  # make pairs
                 players_round = self.tournoi_views.views_round_input(
                     players_pairing, self.tournoi_model.current_round() + 1)  # display + input
                 date_hour_end = self.dateHourEnd()  # save date hour end in var
@@ -208,8 +210,7 @@ class TournamentController:
             else:
                 # if there is no round existing
                 date_hour_bgn = self.dateHourBegin()
-                players = self.tournoi_model.retrieve_players_input_information()
-                players_pairing = self.pairing_first_round(players)
+                players_pairing = self.pairing_first_round()
                 players_round = self.tournoi_views.views_round_input(
                     players_pairing, self.tournoi_model.current_round() + 1)
                 date_hour_end = self.dateHourEnd()
@@ -250,7 +251,7 @@ class TournamentController:
                         # Add player window
                         choix_j = self.clmenu.player_menu()
                         if choix_j == constants.ADD_PLAYER:
-                            infos_player = self.tournoi_add_player.ask_player_infos()
+                            infos_player = self.clmenu.ask_player_infos()
                             if infos_player is None:
                                 pass
                             else:
@@ -262,7 +263,7 @@ class TournamentController:
 
                         # see player window
                         elif choix_j == constants.SEE_PLAYER:
-                            self.tournoi_add_player.reg_players()
+                            self.clmenu.reg_players()
                         else:  # back
                             break
 

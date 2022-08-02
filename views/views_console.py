@@ -4,108 +4,6 @@ import os
 import time
 
 
-class AddPlayerViews:
-    def __init__(self, l_name="", f_name="", b_day="", gender="", rank=0.0):
-        self.l_name = l_name
-        self.f_name = f_name
-        self.b_day = b_day
-        self.gender = gender
-        self.rank = rank
-        self.score = 0.0
-
-        self.test_input = controllers.controller.InputVerification()
-
-    def ask_player_infos(self):
-        print("----------------------------------------------------------")
-        print("----------------------------------------------------------")
-        print("--|       _     _             _                        |--")
-        print("--|      / \\   (_) ___  _   _| |_ ___ _ __             |--")
-        print("--|     / _ \\  | |/ _ \\| | | | __/ _ \\ '__|            |--")
-        print("--|    / ___ \\ | | (_) | |_| | ||  __/ |               |--")
-        print("--|   /_/   \\_\\/ |\\___/_\\__,_|\\__\\___|_|               |--")
-        print("--|    _   _ |__/     (_) ___  _   _  ___ _   _ _ __   |--")
-        print("--|   | | | | '_ \\    | |/ _ \\| | | |/ _ \\ | | | '__|  |--")
-        print("--|   | |_| | | | |   | | (_) | |_| |  __/ |_| | |     |--")
-        print("--|    \\__,_|_| |_|  _/ |\\___/ \\__,_|\\___|\\__,_|_|     |--")
-        print("--|                 |__/                               |--")
-        print("----------------------------------------------------------")
-        print("------------------ | Ajouter un joueur | -----------------")
-        print("----------------------------------------------------------")
-
-        self.l_name = input(" | - Entrez nom : ")
-        self.l_name = self.test_input.test_alpha(self.l_name)  # verification
-
-        self.f_name = input(" | - Entrez prénom : ")
-        self.f_name = self.test_input.test_alpha(self.f_name)  # verification
-
-        self.b_day = input(" | - Date d'anniversaire (jj/mm/aaaa): ")
-        self.b_day = self.test_input.test_date(self.b_day)  # verification
-
-        self.gender = input(" | - Genre (H/F/N) : ")
-        self.gender = self.test_input.test_alpha_one_letter(self.gender)  # verification
-
-        self.rank = input(" | - Rang : ")
-        self.rank = self.test_input.test_num(self.rank, 0, 3000)  # verification
-        self.rank = str("{:04d}".format(int(self.rank)))
-
-        print(" -------------------------------------------------------- ")
-        print("|Valider les informations et ajouter à la base de données|")
-        print(" -------------------------------------------------------- ")
-        print("| - 1 : Valider")
-        print("| - 2 : Retour")
-        print("| ------------------------------------------------------- ")
-        val_player = input("| - Votre choix : ")
-        val_player = self.test_input.test_num(val_player, 1, 2)  # verification
-
-        if int(val_player) == 1:
-            MenuViews.cls()
-            return self.l_name, self.f_name, self.b_day, self.gender, self.rank, self.score
-        else:
-            MenuViews.cls()
-            pass
-
-    def reg_players(self):
-        '''
-        Retourne la liste des joueurs enregistrés dans la db
-        '''
-        tournoi_retrieve = TournamentModel()
-        player_from_db = tournoi_retrieve.retrieve_all_player_from_db()
-        inc_temp_01 = 1
-        print("----------------------------------------------------------")
-        print("----------------------------------------------------------")
-        print("--|      _                                             |--")
-        print("--|     | | ___  _   _  ___ _   _ _ __ ___             |--")
-        print("--|  _  | |/ _ \\| | | |/ _ \\ | | | '__/ __|            |--")
-        print("--| | |_| | (_) | |_| |  __/ |_| | |  \\__ \\            |--")
-        print("--|  \\___/ \\___/ \\__,_|\\___|\\__,_|_|  |___/            |--")
-        print("--|                            _     _         __      |--")
-        print("--|   ___ _ __  _ __ ___  __ _(_)___| |_ _ __ /_/  ___ |--")
-        print("--|  / _ \\ '_ \\| '__/ _ \\/ _` | / __| __| '__/ _ \\/ __||--")
-        print("--| |  __/ | | | | |  __/ (_| | \\__ \\ |_| | |  __/\\__ \\|--")
-        print("--|  \\___|_| |_|_|  \\___|\\__, |_|___/\\__|_|  \\___||___/|--")
-        print("--|                      |___/                         |--")
-        print("----------------------------------------------------------")
-        print("----------------- | Ajouter un joueur | ------------------")
-        print("----------------------------------------------------------")
-        print("")
-
-        # delete the score line useless for the view
-        for i in player_from_db:
-            del i['Score']
-
-        for i in player_from_db:
-            print()
-            print(f'------ | Joueur N°{inc_temp_01} | ------')
-            # print(an_array)
-            for x, y in i.items():
-                print(f" | - {x} : {y} ")
-            inc_temp_01 += 1
-
-        print("")
-        input("Appuyez sur une touche pour continuer.")
-        MenuViews.cls()
-
-
 class TournamentViews:
     def __init__(self):
         # self.id_round_views = TournamentModel().id_round
@@ -328,6 +226,96 @@ class MenuViews:
         self.cls()
 
         return int(choix_j)
+
+    def ask_player_infos(self):
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|       _     _             _                        |--")
+        print("--|      / \\   (_) ___  _   _| |_ ___ _ __             |--")
+        print("--|     / _ \\  | |/ _ \\| | | | __/ _ \\ '__|            |--")
+        print("--|    / ___ \\ | | (_) | |_| | ||  __/ |               |--")
+        print("--|   /_/   \\_\\/ |\\___/_\\__,_|\\__\\___|_|               |--")
+        print("--|    _   _ |__/     (_) ___  _   _  ___ _   _ _ __   |--")
+        print("--|   | | | | '_ \\    | |/ _ \\| | | |/ _ \\ | | | '__|  |--")
+        print("--|   | |_| | | | |   | | (_) | |_| |  __/ |_| | |     |--")
+        print("--|    \\__,_|_| |_|  _/ |\\___/ \\__,_|\\___|\\__,_|_|     |--")
+        print("--|                 |__/                               |--")
+        print("----------------------------------------------------------")
+        print("------------------ | Ajouter un joueur | -----------------")
+        print("----------------------------------------------------------")
+
+        l_name = input(" | - Entrez nom : ")
+        l_name = self.test_input.test_alpha(l_name)  # verification
+
+        f_name = input(" | - Entrez prénom : ")
+        f_name = self.test_input.test_alpha(f_name)  # verification
+
+        b_day = input(" | - Date d'anniversaire (jj/mm/aaaa): ")
+        b_day = self.test_input.test_date(b_day)  # verification
+
+        gender = input(" | - Genre (H/F/N) : ")
+        gender = self.test_input.test_alpha_one_letter(gender)  # verification
+
+        rank = input(" | - Rang : ")
+        rank = self.test_input.test_num(rank, 0, 3000)  # verification
+        rank = str("{:04d}".format(int(rank)))
+
+        print(" -------------------------------------------------------- ")
+        print("|Valider les informations et ajouter à la base de données|")
+        print(" -------------------------------------------------------- ")
+        print("| - 1 : Valider")
+        print("| - 2 : Retour")
+        print("| ------------------------------------------------------- ")
+        val_player = input("| - Votre choix : ")
+        val_player = self.test_input.test_num(val_player, 1, 2)  # verification
+
+        if int(val_player) == 1:
+            MenuViews.cls()
+            return l_name, f_name, b_day, gender, rank  # , 0.0
+        else:
+            MenuViews.cls()
+            pass
+
+    def reg_players(self):
+        '''
+        - Return the list of registered player in db
+        '''
+        tournoi_retrieve = TournamentModel()
+        player_from_db = tournoi_retrieve.retrieve_all_player_from_db()
+        inc_temp_01 = 1
+        print("----------------------------------------------------------")
+        print("----------------------------------------------------------")
+        print("--|      _                                             |--")
+        print("--|     | | ___  _   _  ___ _   _ _ __ ___             |--")
+        print("--|  _  | |/ _ \\| | | |/ _ \\ | | | '__/ __|            |--")
+        print("--| | |_| | (_) | |_| |  __/ |_| | |  \\__ \\            |--")
+        print("--|  \\___/ \\___/ \\__,_|\\___|\\__,_|_|  |___/            |--")
+        print("--|                            _     _         __      |--")
+        print("--|   ___ _ __  _ __ ___  __ _(_)___| |_ _ __ /_/  ___ |--")
+        print("--|  / _ \\ '_ \\| '__/ _ \\/ _` | / __| __| '__/ _ \\/ __||--")
+        print("--| |  __/ | | | | |  __/ (_| | \\__ \\ |_| | |  __/\\__ \\|--")
+        print("--|  \\___|_| |_|_|  \\___|\\__, |_|___/\\__|_|  \\___||___/|--")
+        print("--|                      |___/                         |--")
+        print("----------------------------------------------------------")
+        print("----------------- | Ajouter un joueur | ------------------")
+        print("----------------------------------------------------------")
+        print("")
+
+        # delete the score line useless for the view
+        for i in player_from_db:
+            del i['Score']
+
+        for i in player_from_db:
+            print()
+            print(f'------ | Joueur N°{inc_temp_01} | ------')
+            # print(an_array)
+            for x, y in i.items():
+                print(f" | - {x} : {y} ")
+            inc_temp_01 += 1
+
+        print("")
+        input("Appuyez sur une touche pour continuer.")
+        MenuViews.cls()
 
     def tournamentMenu(self):
         self.cls()

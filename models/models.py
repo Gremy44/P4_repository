@@ -132,7 +132,7 @@ class ReportModel:
         all_rondes = TinyDB(tournament_path)
         rounds = all_rondes.tables()
         rounds = sorted(rounds)
-        rounds = rounds[:-1]
+        rounds = rounds[1:]
 
         for i in rounds:
             all_rondes.default_table_name = i
