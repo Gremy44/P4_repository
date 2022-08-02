@@ -165,7 +165,7 @@ class ReportModel:
 
         lst_tournament = self.nameFinishedTournament()
 
-        selct_path = lst_tournament[int(number)-1]
+        selct_path = lst_tournament[int(number) - 1]
 
         lst_id_score = []
         lst_complete = []
@@ -424,7 +424,7 @@ class TournamentModel:
         else:
             rtt.default_table_name = "Tournees"
             match = rtt.all()
-            match = match[self.current_round()-1][f'Ronde {self.current_round()}']
+            match = match[self.current_round() - 1][f'Ronde {self.current_round()}']
 
         pdb = TinyDB("./chess_data_base/players_data_base/players_data_base.json")
         pdb.default_table_name = "Players"

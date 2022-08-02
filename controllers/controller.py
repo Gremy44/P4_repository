@@ -121,10 +121,10 @@ class TournamentController:
         tri = sorted(list_players, key=lambda x: x['Rang'])  # tri par rang
 
         # determine le nombre de tour pour la boucle
-        length_to_split = int(len(tri)/2)
+        length_to_split = int(len(tri) / 2)
 
         for i in range(length_to_split):  # fait les paires
-            paires_1 = [tri[i], tri[i+length_to_split]]
+            paires_1 = [tri[i], tri[i + length_to_split]]
             my_paires.append(paires_1)
 
         return my_paires
@@ -139,10 +139,10 @@ class TournamentController:
         pair = sorted(list_players, key=lambda x: (x['Score'], x['Rang']))
 
         mod = 0
-        for i in range(int(len(pair)/2)):
-            mes_paires_temp.append(pair[mod+i])
+        for i in range(int(len(pair) / 2)):
+            mes_paires_temp.append(pair[mod + i])
             mod += 1
-            mes_paires_temp.append(pair[mod+i])
+            mes_paires_temp.append(pair[mod + i])
             my_paires.insert(i, mes_paires_temp)
             mes_paires_temp = []
 
@@ -192,16 +192,16 @@ class TournamentController:
 
             # print("ROUND ACTUEL : ", self.tournoi_model.current_round()+1)
 
-            if self.tournoi_model.current_round()+1 > 1:
+            if self.tournoi_model.current_round() + 1 > 1:
                 # if existing round
                 date_hour_bgn = self.dateHourBegin()  # save date hour begin in var
                 players = self.tournoi_model.retrieve_round()  # retrieve infos of existing round
                 players_pairing = self.pairing_other_round(players)  # make pairs
                 players_round = self.tournoi_views.views_round_input(
-                    players_pairing, self.tournoi_model.current_round()+1)  # display + input
+                    players_pairing, self.tournoi_model.current_round() + 1)  # display + input
                 date_hour_end = self.dateHourEnd()  # save date hour end in var
                 self.tournoi_model.save_round_advance(
-                    players_round, self.tournoi_model.current_round()+1, date_hour_bgn, date_hour_end)
+                    players_round, self.tournoi_model.current_round() + 1, date_hour_bgn, date_hour_end)
 
                 print("----------------------------------------------------------")
                 input("---------| Appuyer sur 'Entrée' pour continuer |----------")
@@ -211,10 +211,10 @@ class TournamentController:
                 players = self.tournoi_model.retrieve_players_input_information()
                 players_pairing = self.pairing_first_round(players)
                 players_round = self.tournoi_views.views_round_input(
-                    players_pairing, self.tournoi_model.current_round()+1)
+                    players_pairing, self.tournoi_model.current_round() + 1)
                 date_hour_end = self.dateHourEnd()
                 self.tournoi_model.save_round_advance(
-                    players_round, self.tournoi_model.current_round()+1, date_hour_bgn, date_hour_end)
+                    players_round, self.tournoi_model.current_round() + 1, date_hour_bgn, date_hour_end)
 
                 print("----------------------------------------------------------")
                 input("---------| Appuyer sur 'Entrée' pour continuer |----------")

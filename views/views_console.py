@@ -195,7 +195,7 @@ class TournamentViews:
 
         for i in range(len(sorted_paires)):
             print("----------------------| Match",
-                  i+1, ": |-----------------------")
+                  i + 1, ": |-----------------------")
             print("----------------------------------------------------------")
             print(sorted_paires[i][0]['Nom'],
                   sorted_paires[i][0]['Prenom'], " |--- VS ---| ",
@@ -672,7 +672,7 @@ class MenuViews:
             print("--|")
             print(f"--|--------------------| Tour N°{i+1} |-----------------------")
             print(f"--|----------| Début : {infos_tournoi[2][inc_02]} |--------------")
-            for n in range(infos_tournoi[0][4]*2):
+            for n in range(infos_tournoi[0][4] * 2):
                 print("--|", infos_tournoi[1][inc_01][1], '', infos_tournoi[1][inc_01][0],
                       " avec un score de ", infos_tournoi[1][inc_01][5])
                 inc_01 += 1
@@ -718,7 +718,7 @@ class MenuViews:
             print("--|-------------------------------------------------------")
             for n in range(infos_tournoi[0][4]):
                 print(f"--| Match N°{inc_01} : ", infos_tournoi[1][inc_02][1], infos_tournoi[1][inc_02][0],
-                      " --- VS --- ", infos_tournoi[1][inc_02+1][1], infos_tournoi[1][inc_02+1][0])
+                      " --- VS --- ", infos_tournoi[1][inc_02 + 1][1], infos_tournoi[1][inc_02 + 1][0])
                 inc_01 += 1
                 inc_02 += 2
             print(f"--|------------| Fin : {infos_tournoi[2][inc_03+1]} |--------------")

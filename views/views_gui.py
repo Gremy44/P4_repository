@@ -28,10 +28,10 @@ class ControllerGui(QMainWindow):
         # tri par rang
         tri = sorted(self.list_players, key=lambda x: x['Rang'])
 
-        length_to_split = int(len(tri)/2)  # determine le nombre de tour pour la boucle
+        length_to_split = int(len(tri) / 2)  # determine le nombre de tour pour la boucle
 
         for i in range(length_to_split):  # fait les paires
-            paires_1 = [tri[i], tri[i+length_to_split]]
+            paires_1 = [tri[i], tri[i + length_to_split]]
             self.my_paires.append(paires_1)
 
         return self.my_paires
@@ -46,10 +46,10 @@ class ControllerGui(QMainWindow):
         pair = sorted(self.list_player_other_round, key=lambda x: (x['Score'], x['Rang']))
 
         mod = 0
-        for i in range(int(len(pair)/2)):
-            mes_paires_temp.append(pair[mod+i])
+        for i in range(int(len(pair) / 2)):
+            mes_paires_temp.append(pair[mod + i])
             mod += 1
-            mes_paires_temp.append(pair[mod+i])
+            mes_paires_temp.append(pair[mod + i])
             self.my_paires.insert(i, mes_paires_temp)
             mes_paires_temp = []
 
@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
         self.btn_tournaments.clicked.connect(self.btnTournaments)
         self.btn_quit.clicked.connect(self.btnQuit)
 
-        # Show the app
+    def show_window(self):
         self.show()
 
     def btnPlayers(self):
@@ -94,6 +94,7 @@ class MainWindow(QMainWindow):
         app = QApplication(sys.argv)  # instantiate
 
         main_window = MainWindow()
+        main_window.show_window()
 
         sys.exit(app.exec())  # execute
 
@@ -585,7 +586,7 @@ class QWRoundEmpty(QMainWindow):
                 self.my_players[i][1]['Score'] = self.my_players[i][1]['Score'] + float(score_p2)
 
             self.tournament_models.save_round_advance(
-                self.my_players, self.ctr_gui.actual_round+1, self.date_hour_bgn, self.date_hour_end)
+                self.my_players, self.ctr_gui.actual_round + 1, self.date_hour_bgn, self.date_hour_end)
 
             self.t_to_round = QWRoundEmpty()
             self.t_to_round.show()
@@ -771,7 +772,7 @@ class RPlayersTournament(QMainWindow):
     def __init__(self, value_a):
         super(RPlayersTournament, self).__init__()
 
-        self.retrieve_infos = ReportModel().finishedTournamentNb(value_a+1)
+        self.retrieve_infos = ReportModel().finishedTournamentNb(value_a + 1)
         self.slice_r_i = self.retrieve_infos[1][-8:]
 
     # Load the UI file
@@ -828,7 +829,7 @@ class Rondes(QMainWindow):
         super(Rondes, self).__init__()
 
     # Variables
-        infos_tournoi = ReportModel().finishedTournamentNb(value_a+1)
+        infos_tournoi = ReportModel().finishedTournamentNb(value_a + 1)
 
         report_rondes_text = ""
 
@@ -849,7 +850,7 @@ class Rondes(QMainWindow):
         self.lbl_name_tournament_rondes.setText(infos_tournoi[0][0])
 
         for i in range(len(infos_tournoi[1])):
-            if i % (infos_tournoi[0][4]*2) == 0:
+            if i % (infos_tournoi[0][4] * 2) == 0:
                 report_rondes_text = report_rondes_text + f"───────┤ Round {inc_01} ├───────\n"
                 inc_01 += 1
             report_rondes_text = report_rondes_text + \
@@ -868,7 +869,7 @@ class Matchs(QMainWindow):
         super(Matchs, self).__init__()
 
     # Variables
-        infos_tournoi = ReportModel().finishedTournamentNb(value_a+1)
+        infos_tournoi = ReportModel().finishedTournamentNb(value_a + 1)
 
         report_matchs_text = ""
 
@@ -889,7 +890,7 @@ class Matchs(QMainWindow):
 
         self.lbl_name_tournament_rondes.setText(infos_tournoi[0][0])
 
-        for i in range(int(len(infos_tournoi[1])/2)):
+        for i in range(int(len(infos_tournoi[1]) / 2)):
             if i % (infos_tournoi[0][4]) == 0:
                 report_matchs_text = report_matchs_text + f"───────┤ Round {inc_01} ├───────\n"
                 inc_01 += 1
