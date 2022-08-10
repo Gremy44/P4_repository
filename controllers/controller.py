@@ -1,5 +1,6 @@
+from collections import deque
 from models.models import PlayerModel, TournamentModel, ReportModel
-from views.views_console import AddPlayerViews, MenuViews, TournamentViews
+from views.views_console import MenuViews
 from views.views_gui import AddPlayers, MainWindow
 import controllers.constants as constants
 import time
@@ -25,9 +26,10 @@ class InputVerification:
         """
         - Test alphabetic string
         """
-        inp_tmp = mon_input.replace(" ", "")
-
         while True:
+
+            inp_tmp = mon_input.replace(" ", "")
+
             if inp_tmp.isalpha():
                 return mon_input
             else:
@@ -91,17 +93,13 @@ class AddPlayerController:
 
 class TournamentController:
     def __init__(self):
-        self.tournoi_views = TournamentViews()
         self.tournoi_model = TournamentModel()
         self.tournoi_report = ReportModel()
         self.tournoi_player = PlayerModel()
-        self.tournoi_add_player = AddPlayerViews()
         self.clmenu = MenuViews()
 
-        self.infos_match = self.tournoi_model.retrieve_round()
-
     def infos_tournament_by_views(self):
-        tournament_infos = TournamentViews().ask_tounament_infos()
+        tournament_infos = MenuViews().ask_tounament_infos()
         self.t_name = tournament_infos[0]
         self.t_place = tournament_infos[1]
         self.t_date_start = tournament_infos[2]
@@ -116,6 +114,8 @@ class TournamentController:
         '''
         - pair for first round
         '''
+        self.infos_match = self.tournoi_model.retrieve_round()
+
         my_paires = []
 
         # sorting suivant le rang
@@ -131,6 +131,21 @@ class TournamentController:
             my_paires.append(paires_1)
 
         return my_paires
+
+    def find_matching_match(self, player):
+        inc_01 = 0  # index of .pairing_other_round where there is double
+
+        for i in player:
+            for n in self.tournoi_model.match_table():
+                tmp = []
+                tmp.append(i[0]['id_player'])
+                tmp.append(i[1]['id_player'])
+
+                if tmp == n:
+                    return True
+
+            inc_01 += 1
+        return False
 
     def pairing_other_round(self):
         '''
@@ -148,6 +163,39 @@ class TournamentController:
             mes_paires_temp.append(pair[mod + i])
             my_paires.insert(i, mes_paires_temp)
             mes_paires_temp = []
+
+        return my_paires
+
+    def pairing_other_round_deque(self):
+        '''
+        - pair for other round if double
+        '''
+        tmp_01 = []
+
+        my_paires = []
+
+        pair = sorted(self.infos_match, key=lambda x: (x['Score'], x['Rang']))
+
+        paires_01 = []
+        paires_02 = []
+
+        p1 = deque(paires_01)
+        p2 = deque(paires_02)
+
+        mod = 0
+
+        for i in range(int(len(pair) / 2)):
+            p1.appendleft(pair[mod])
+            p2.appendleft(pair[mod + 1])
+            mod += 2
+
+        p2.rotate(1)
+
+        for i in range(len(p1)):
+            tmp_01 = [p1[i], p2[i]]
+            my_paires.append(tmp_01)
+
+        my_paires.reverse()
 
         return my_paires
 
@@ -198,8 +246,10 @@ class TournamentController:
             if self.tournoi_model.current_round() + 1 > 1:
                 # if existing round
                 date_hour_bgn = self.dateHourBegin()  # save date hour begin in var
-                players_pairing = self.pairing_other_round()  # make pairs
-                players_round = self.tournoi_views.views_round_input(
+                players_pairing = self.pairing_other_round()
+                while self.find_matching_match(players_pairing):
+                    players_pairing = self.pairing_other_round_deque()
+                players_round = self.clmenu.views_round_input(
                     players_pairing, self.tournoi_model.current_round() + 1)  # display + input
                 date_hour_end = self.dateHourEnd()  # save date hour end in var
                 self.tournoi_model.save_round_advance(
@@ -211,7 +261,7 @@ class TournamentController:
                 # if there is no round existing
                 date_hour_bgn = self.dateHourBegin()
                 players_pairing = self.pairing_first_round()
-                players_round = self.tournoi_views.views_round_input(
+                players_round = self.clmenu.views_round_input(
                     players_pairing, self.tournoi_model.current_round() + 1)
                 date_hour_end = self.dateHourEnd()
                 self.tournoi_model.save_round_advance(
@@ -220,7 +270,7 @@ class TournamentController:
                 print("----------------------------------------------------------")
                 input("---------| Appuyer sur 'Entrée' pour continuer |----------")
 
-        self.tournoi_views.results()
+        self.clmenu.results()
         self.tournoi_model.save_finished_tournament()
 
     def start(self):
@@ -261,9 +311,13 @@ class TournamentController:
                                                                   infos_player[3],
                                                                   infos_player[4])
 
-                        # see player window
+                        # see player view
                         elif choix_j == constants.SEE_PLAYER:
                             self.clmenu.reg_players()
+                        # change rank view
+                        elif choix_j == constants.MODIFY_RANK:
+                            cr = self.clmenu.change_rank()
+                            PlayerModel().modify_player_score_console(cr)
                         else:  # back
                             break
 

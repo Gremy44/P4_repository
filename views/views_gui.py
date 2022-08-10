@@ -1,10 +1,12 @@
+from collections import deque
 from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton,\
-    QLineEdit, QSpinBox, QDateEdit, QTextEdit, QLabel,\
+    QLineEdit, QSpinBox, QDateEdit, QTextEdit, QLabel, QMessageBox,\
     QTableWidget, QTabWidget, QDoubleSpinBox, QPlainTextEdit
 from PyQt6 import uic, QtWidgets
 from models.models import PlayerModel, TournamentModel, ReportModel
 import time
 import sys
+import os
 
 
 class ControllerGui(QMainWindow):
@@ -54,6 +56,60 @@ class ControllerGui(QMainWindow):
             mes_paires_temp = []
 
         return self.my_paires
+
+    def find_matching_match(self, player):
+        inc_01 = 0  # index of .pairing_other_round where there is double
+
+        for i in player:
+            for n in self.tournoi_model.match_table():
+                tmp = []
+
+                tmp.append(i[0]['id_player'])
+                tmp.append(i[1]['id_player'])
+
+                if tmp == n:
+                    return True
+
+            inc_01 += 1
+        return False
+
+    def pairing_other_round_deque(self):
+        '''
+        - pair for other round if double
+        '''
+        tmp_01 = []
+
+        my_paires = []
+
+        pair = sorted(self.list_player_other_round, key=lambda x: (x['Score'], x['Rang']))
+
+        paires_01 = []
+        paires_02 = []
+
+        p1 = deque(paires_01)
+        p2 = deque(paires_02)
+
+        mod = 0
+
+        for i in range(int(len(pair) / 2)):
+            p1.appendleft(pair[mod])
+            p2.appendleft(pair[mod + 1])
+            mod += 2
+
+        p2.rotate(1)
+
+        for i in range(len(p1)):
+            tmp_01 = [p1[i], p2[i]]
+            my_paires.append(tmp_01)
+
+        my_paires.reverse()
+
+        return my_paires
+
+    def dateHourBegin(self):
+        date_hour_begin = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+
+        return date_hour_begin
 
 
 class MainWindow(QMainWindow):
@@ -161,6 +217,7 @@ class AddPlayers(QMainWindow):
         self.send_add_player_infos()
         self.t_to_players.show()
         self.close()
+        self.retour_validation()
 
     def btnBack(self):
         self.t_to_back_players = PlayersWindow()
@@ -184,29 +241,43 @@ class AddPlayers(QMainWindow):
             self.gender,
             self.sb_rank)
 
+    def retour_validation(self):  # pop up message validation
+        msgBox = QMessageBox()
+        msgBox.setText("Le joueur à bien été ajouté")
+        msgBox.setWindowTitle("Joueur ajouté")
+
+        msgBox.exec()
+
 
 class PlayerList(QMainWindow):
     def __init__(self):
         super(PlayerList, self).__init__()
+
+        self.lst_table_value_change = []
 
         # Load the UI file
         uic.loadUi('./views/qt_ux/player_list_view.ui', self)
 
         # Define widgets
         self.btn_back = self.findChild(QPushButton, "back")
+        self.btn_validate = self.findChild(QPushButton, "pushButton")
         self.list_db = self.findChild(QTableWidget, "tableWidget")
 
         # Connecting to actions
         self.btn_back.clicked.connect(self.btnBack)
+        self.btn_validate.clicked.connect(self.btn_v)
+
+        self.list_db.cellChanged.connect(self.changementItem)
+        self.btn_validate.setEnabled(False)
 
         # List Widget
         self.get_data()
 
     def get_data(self):
-        players = TournamentModel().retrieve_all_player_from_db()
+        self.players = TournamentModel().retrieve_all_player_from_db()
         row = 0
-        self.tableWidget.setRowCount(len(players))
-        for p in players:
+        self.tableWidget.setRowCount(len(self.players))
+        for p in self.players:
             self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(p['Nom']))
             self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(p['Prenom']))
             self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(p['Date de naissance']))
@@ -214,10 +285,73 @@ class PlayerList(QMainWindow):
             self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(p['Rang']))
             row += 1
 
+    def changementItem(self, row, column):
+
+        a = row
+        b = column
+
+        self.lst_table_value_change.append((a, b))
+
+        if len(self.lst_table_value_change) / 5 > float(len(self.players)):
+            self.btn_validate.setEnabled(True)
+
+    def btn_v(self):
+        inc_insert = 0
+        validate = False  # validation bool
+        change_value = {}  # dict of changed values
+
+        temp_len = len(self.players) * 5
+
+        for i in self.lst_table_value_change[temp_len:]:
+
+            cell_value = self.tableWidget.item(i[0], i[1]).text()
+
+            try:
+                if i[1] == 4 and cell_value.isdigit() and 0 <= int(cell_value) <= 3000:
+
+                    # create the dict
+                    change_value[self.lst_table_value_change[temp_len:][inc_insert]]\
+                        = str("{:04d}".format(int(cell_value)))
+                    inc_insert += 1
+
+                    validate = True
+
+                else:
+                    self.disclamer()
+            except TypeError:
+                self.disclamer()
+
+        if validate:
+            PlayerModel().modify_player_score_gui(change_value)
+
+            self.close()
+            self.btnBack()
+            self.validation_ok()
+
+    def disclamer(self):  # pop up message
+        msgBox = QMessageBox()
+        msgBox.setText("Veuillez ne modifier que la colonne 'Rang' avec des valeurs comprises entre '0' et '3000'.")
+        msgBox.setWindowTitle("Problème de modification")
+
+        msgBox.exec()
+
+    def validation_ok(self):  # pop up message
+        msgBox = QMessageBox()
+        msgBox.setText("Vos changements effectués")
+        msgBox.setWindowTitle("Changements validés")
+
+        msgBox.exec()
+
     def btnBack(self):
         self.t_to_back_players = PlayersWindow()
         self.t_to_back_players.show()
         self.close()
+
+    def cls(self):
+        """
+        - Clean console
+        """
+        os.system('cls' if os.name == 'nt' else 'clear')
 
 
 class Tournament(QMainWindow):
@@ -452,7 +586,6 @@ class Begin(QMainWindow):
         self.btn_validate.clicked.connect(self.btnBegin)
 
     def btnBegin(self):
-
         self.n = QWRoundEmpty()
         self.n.show()
         self.close()
@@ -471,6 +604,7 @@ class QWRound(QMainWindow):
         self.lbl_round = self.findChild(QLabel, "label")
         self.lbl_player_1 = self.findChild(QLabel, "label_3")
         self.lbl_player_2 = self.findChild(QLabel, "label_4")
+        self.lbl_disc = self.findChild(QLabel, "label_6")
         self.s_p_1 = self.findChild(QDoubleSpinBox, "doubleSpinBox_3")
         self.s_p_2 = self.findChild(QDoubleSpinBox, "doubleSpinBox_4")
         self.btn_v_round = self.findChild(QPushButton, "pushButton")
@@ -480,22 +614,31 @@ class QWRound(QMainWindow):
         self.btn_v_round.clicked.connect(self.btn_validate_round)
 
     def btn_validate_round(self):
-        if self.btn_v_round.isChecked():
-            btn = True
-            self.s_p_1.setEnabled(False)
-            self.s_p_2.setEnabled(False)
+        validate_01 = self.s_p_1.text().replace(",", ".")
+        validate_02 = self.s_p_2.text().replace(",", ".")
+
+        if float(validate_01) + float(validate_02) != 1.0:
+            self.lbl_disc.setText("Le total des score doit être égal à 1 pour valider")
+            self.btn_v_round.setCheckable(False)
         else:
-            btn = False
-            self.s_p_1.setEnabled(True)
-            self.s_p_2.setEnabled(True)
-        return btn
+            self.lbl_disc.setText("")
+            self.btn_v_round.setCheckable(True)
+            if self.btn_v_round.isChecked():
+                btn = True
+                self.s_p_1.setEnabled(False)
+                self.s_p_2.setEnabled(False)
+            else:
+                btn = False
+                self.s_p_1.setEnabled(True)
+                self.s_p_2.setEnabled(True)
+            return btn
 
 
 class QWRoundEmpty(QMainWindow):
     def __init__(self):
         super(QWRoundEmpty, self).__init__()
 
-    # Variables
+        # Variables
         self.tournament_models = TournamentModel()
         self.players_models = PlayerModel()
         self.ctr_gui = ControllerGui()
@@ -509,46 +652,40 @@ class QWRoundEmpty(QMainWindow):
 
         inc = 0
 
-        if self.ctr_gui.actual_round < self.rondes:
-
-            # Load the UI file
-            uic.loadUi('./views/qt_ux/round_empty.ui', self)
+        # Load the UI file
+        uic.loadUi('./views/qt_ux/round_empty.ui', self)
 
         # Define Widgets
 
-            self.tab_match = self.findChild(QTabWidget, "tabWidget")
-            self.btn_validate_all_rondes = self.findChild(QPushButton, "pushButton_2")
-            self.lbl_warning = self.findChild(QLabel, "label")
+        self.tab_match = self.findChild(QTabWidget, "tabWidget")
+        self.btn_validate_all_rondes = self.findChild(QPushButton, "pushButton_2")
+        self.lbl_warning = self.findChild(QLabel, "label")
 
         # Connecting to actions
-            self.tab_match.currentChanged.connect(self.tabChanged)
-            self.btn_validate_all_rondes.clicked.connect(self.btnValidatAllRondes)
+        self.tab_match.currentChanged.connect(self.tabChanged)
+        self.btn_validate_all_rondes.clicked.connect(self.btnValidatAllRondes)
 
         # Instancing interface
-            self.date_hour_bgn = self.dateHourBegin()
+        self.date_hour_bgn = self.dateHourBegin()
 
-            if self.test_round is False:  # si pas de round
-                self.my_players = self.ctr_gui.pairing_first_round()
-            else:
-                self.my_players = self.ctr_gui.pairing_other_round()
-            for i in range(self.rounds):
-
-                self.tab_match.addTab(QWRound(), f"Match {i+1}")
-
-                self.tab_match.widget(i).lbl_round.setText(f"Round {self.ctr_gui.actual_round+1}")  # set round number
-
-                self.tab_match.widget(i).lbl_player_1.setText(
-                    f"{self.my_players[i][0]['Prenom']}\nScore : {self.my_players[i][0]['Score']}")  # set name p1
-                self.tab_match.widget(i).lbl_player_2.setText(
-                    f"{self.my_players[i][1]['Prenom']}\nScore : {self.my_players[i][1]['Score']}")  # set name p2
-
-                inc += 2
+        if self.test_round is False:  # si pas de round
+            self.my_players = self.ctr_gui.pairing_first_round()
         else:
-            print("ici : ", self.ctr_gui.actual_round, " < ", self.rounds)
-            print("coucoufinish")
-            self.t_to_finish = Results()
-            self.t_to_finish.show()
-            self.close()
+            self.my_players = self.ctr_gui.pairing_other_round()
+            while self.ctr_gui.find_matching_match(self.my_players):
+                self.my_players = self.ctr_gui.pairing_other_round_deque()
+        for i in range(self.rounds):
+
+            self.tab_match.addTab(QWRound(), f"Match {i+1}")
+
+            self.tab_match.widget(i).lbl_round.setText(f"Round {self.ctr_gui.actual_round+1}")  # set round number
+
+            self.tab_match.widget(i).lbl_player_1.setText(
+                f"{self.my_players[i][0]['Prenom']}\nScore : {self.my_players[i][0]['Score']}")  # set name p1
+            self.tab_match.widget(i).lbl_player_2.setText(
+                f"{self.my_players[i][1]['Prenom']}\nScore : {self.my_players[i][1]['Score']}")  # set name p2
+
+            inc += 2
 
     def dateHourBegin(self):
         date_hour_begin = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
@@ -588,11 +725,14 @@ class QWRoundEmpty(QMainWindow):
             self.tournament_models.save_round_advance(
                 self.my_players, self.ctr_gui.actual_round + 1, self.date_hour_bgn, self.date_hour_end)
 
-            self.t_to_round = QWRoundEmpty()
-            self.t_to_round.show()
-            self.close()
-
-            return self.my_players
+            if self.ctr_gui.actual_round < self.rondes - 1:
+                self.t_to_round = QWRoundEmpty()
+                self.t_to_round.show()
+                self.close()
+            else:
+                self.t_to_round = Results()
+                self.t_to_round.show()
+                self.close()
 
         else:
             self.lbl_warning.setText("Valider toutes les rondes pour pouvoir valider le round")
@@ -639,6 +779,9 @@ class Resume(QMainWindow):
     def __init__(self):
         super(Resume, self).__init__()
 
+        self.ctr_gui = ControllerGui()
+        self.tournament_models = TournamentModel()
+        self.rondes = self.tournament_models.retrieve_tournament()[0]["Instance_Rondes"]
     # Load the UI file
         uic.loadUi('./views/qt_ux/resume.ui', self)
 
@@ -649,9 +792,16 @@ class Resume(QMainWindow):
         self.btn_new_tournament.clicked.connect(self.btnResume)
 
     def btnResume(self):
-        self.t_to_round = QWRoundEmpty()
-        self.t_to_round.show()
-        self.close()
+        print(self.ctr_gui.actual_round)
+        print(self.rondes)
+        if self.ctr_gui.actual_round < self.rondes:
+            self.n = QWRoundEmpty()
+            self.n.show()
+            self.close()
+        else:
+            self.t_to_round = Results()
+            self.t_to_round.show()
+            self.close()
 
 
 class ReportMain(QMainWindow):
@@ -855,8 +1005,6 @@ class Rondes(QMainWindow):
                 inc_01 += 1
             report_rondes_text = report_rondes_text + \
                 f"{infos_tournoi[1][i][1]} {infos_tournoi[1][i][0]} avec un score de {infos_tournoi[1][i][5]} \n"
-
-        print("info tournoi : ", report_rondes_text)
 
         self.lbl_rondes.setPlainText(report_rondes_text)
 

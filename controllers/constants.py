@@ -12,6 +12,7 @@ TOURNAMENT = 2
 # player window
 ADD_PLAYER = 1
 SEE_PLAYER = 2
+MODIFY_RANK = 3
 
 # tournament window
 NEW_TOURNAMENT = 1

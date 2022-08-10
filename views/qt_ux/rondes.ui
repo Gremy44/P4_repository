@@ -46,7 +46,7 @@
          <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="text">
-         <string>Rondes du tournoi</string>
+         <string>Rounds</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>

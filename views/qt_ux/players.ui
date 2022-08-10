@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>players</class>
  <widget class="QMainWindow" name="players">
@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>401</height>
+    <width>469</width>
+    <height>463</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -115,7 +115,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Voir la liste de joueurs</string>
+         <string>Voir ou modifier le score des joueurs</string>
         </property>
         <property name="flat">
          <bool>false</bool>
@@ -146,6 +146,6 @@
    </layout>
   </widget>
  </widget>
- <resources />
- <connections />
+ <resources/>
+ <connections/>
 </ui>

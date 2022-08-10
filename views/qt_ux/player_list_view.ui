@@ -66,7 +66,7 @@
          <enum>QAbstractScrollArea::AdjustIgnored</enum>
         </property>
         <property name="editTriggers">
-         <set>QAbstractItemView::AnyKeyPressed</set>
+         <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
         </property>
         <property name="alternatingRowColors">
          <bool>true</bool>
@@ -105,6 +105,25 @@
           <string>Rang</string>
          </property>
         </column>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>75</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Noto Sans Light</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Valider les modifications de score</string>
+        </property>
        </widget>
       </item>
       <item>

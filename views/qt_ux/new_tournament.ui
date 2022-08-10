@@ -203,7 +203,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Nombre de tours :</string>
+           <string>Matchs par round :</string>
           </property>
          </widget>
         </item>
@@ -242,7 +242,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Instances rondes :</string>
+           <string>Rounds :</string>
           </property>
          </widget>
         </item>
