@@ -247,6 +247,7 @@ class MenuViews:
 
     def ask_tounament_infos(self):
         id_player = PlayerModel()
+        t_players = []
         self.cls()
         print("----------------------------------------------------------")
         print("----------------------------------------------------------")
@@ -275,7 +276,7 @@ class MenuViews:
         t_date_end = input(" | - Entrez date de fin 'jj/mm/aaaa': ")
         t_date_end = self.test_input.test_date(t_date_end)  # verification
 
-        t_instances_rondes = input(" | - Entrez instances rondes : ")
+        t_instances_rondes = input(" | - Entrez le nombre de round : ")
         t_instances_rondes = self.test_input.test_num(t_instances_rondes, 0, 10)  # verification
 
         print(" |   - Test : utiliser une liste déjà faite ?:")
@@ -293,7 +294,7 @@ class MenuViews:
                 j_temp = input(
                     f" | - Entrez le N° joueur du joueur N°:{i+1}/8 : ")
                 j_temp = self.test_input.test_num(j_temp, 1, len(TournamentModel().retrieve_all_player_from_db()))
-                self.t_players.append(int(j_temp))
+                t_players.append(int(j_temp))
 
             t_players = id_player.retrievePlayerFromNumber(t_players)
 
