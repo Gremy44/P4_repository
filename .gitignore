@@ -20,4 +20,7 @@
 /views/qt_ux/qt_ux_temp
 /.vscode
 /.qt_for_python
-/p4bis
+.vscode
+.qt_for_python
+/__pycache__
+.__pycache__
