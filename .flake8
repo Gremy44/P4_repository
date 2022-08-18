@@ -1,0 +1,11 @@
+[flake8]
+ignore = E41
+max-line-length = 119
+exclude = 
+    __pycache__
+    .qt_for_python
+    .vscode
+    chess_data_base
+    p4env
+    .p4env
+max-complexity = 100
