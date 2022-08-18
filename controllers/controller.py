@@ -154,7 +154,9 @@ class TournamentController:
         mes_paires_temp = []
         my_paires = []
 
-        pair = sorted(self.infos_match, key=lambda x: (x['Score'], x['Rang']))
+        infos_match = self.tournoi_model.retrieve_round()
+
+        pair = sorted(infos_match, key=lambda x: (x['Score'], x['Rang']))
 
         mod = 0
         for i in range(int(len(pair) / 2)):
@@ -174,7 +176,9 @@ class TournamentController:
 
         my_paires = []
 
-        pair = sorted(self.infos_match, key=lambda x: (x['Score'], x['Rang']))
+        infos_match = self.tournoi_model.retrieve_round()
+
+        pair = sorted(infos_match, key=lambda x: (x['Score'], x['Rang']))
 
         paires_01 = []
         paires_02 = []
@@ -210,6 +214,9 @@ class TournamentController:
         return date_hour_end
 
     def my_tournament_console(self):
+
+        inc_deque = 0
+
         if not self.tournoi_model.test_current_tournament():
 
             # Hydrate object if there is no existing round
@@ -249,6 +256,11 @@ class TournamentController:
                 players_pairing = self.pairing_other_round()
                 while self.find_matching_match(players_pairing):
                     players_pairing = self.pairing_other_round_deque()
+                    rounds = self.tournoi_model.retrieve_tournament()[0]["Match"]
+                    inc_deque += 1
+                    if inc_deque is rounds:
+                        self.my_players = self.pairing_other_round()
+                        break
                 players_round = self.clmenu.views_round_input(
                     players_pairing, self.tournoi_model.current_round() + 1)  # display + input
                 date_hour_end = self.dateHourEnd()  # save date hour end in var

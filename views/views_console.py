@@ -248,6 +248,7 @@ class MenuViews:
     def ask_tounament_infos(self):
         id_player = PlayerModel()
         t_players = []
+        inc_01 = 1  # increment player
         self.cls()
         print("----------------------------------------------------------")
         print("----------------------------------------------------------")
@@ -279,24 +280,20 @@ class MenuViews:
         t_instances_rondes = input(" | - Entrez le nombre de round : ")
         t_instances_rondes = self.test_input.test_num(t_instances_rondes, 0, 10)  # verification
 
-        print(" |   - Test : utiliser une liste déjà faite ?:")
-        print(" | 1 - Utiliser liste déjà faite")
-        print(" | 2 - Faire ma liste")
+        print(" | Faites votre liste de joueurs")
 
-        cp = input(" |   - Entrez votre choix : ")
-        cp = self.test_input.test_num(cp, 1, 2)  # verification
+        n_j = TournamentModel().retrieve_all_player_from_db()
+        print(" | Joueurs enregistrés dans la base de donnée :")
 
-        if int(cp) == 1:
-            t_players = [3042972155808, 2520259116960, 2835596394400, 2498757410720,
-                         2123311234976, 1988607754144, 1384106246048, 2187293245344]
-        else:
-            for i in range(8):
-                j_temp = input(
-                    f" | - Entrez le N° joueur du joueur N°:{i+1}/8 : ")
-                j_temp = self.test_input.test_num(j_temp, 1, len(TournamentModel().retrieve_all_player_from_db()))
-                t_players.append(int(j_temp))
+        for i in n_j:
+            print(f"--| N°{inc_01} : {i['Prenom']} {i['Nom']} ")
+            inc_01 += 1
+        for i in range(8):
+            j_temp = input(f" | - Entrez le N° joueur du joueur N°:{i+1}/8 : ")
+            j_temp = self.test_input.test_num(j_temp, 1, len(TournamentModel().retrieve_all_player_from_db()))
+            t_players.append(int(j_temp))
 
-            t_players = id_player.retrievePlayerFromNumber(t_players)
+        t_players = id_player.retrievePlayerFromNumber(t_players)
 
         t_time = input(" | - Bullet/Blitz/coup rapide : ")
         t_time = self.test_input.test_alpha(t_time)  # verification
@@ -340,6 +337,17 @@ class MenuViews:
             score_p2 = input(
                 f"| - Score joueur {sorted_paires[i][1]['Nom']} {sorted_paires[i][1]['Prenom']} ('0'/'0.5'/'1'): ")
             score_p2 = self.test_input.test_tournament(score_p2)  # verification
+
+            while float(score_p1) + float(score_p2) != 1:  # verification
+                print("--| Le total des points doit être égal à 1, veuillez entrer des valeurs corrects")
+
+                score_p1 = input(
+                    f"| - Score joueur {sorted_paires[i][0]['Nom']} {sorted_paires[i][0]['Prenom']} ('0'/'0.5'/'1'): ")
+                score_p1 = self.test_input.test_tournament(score_p1)  # verification
+
+                score_p2 = input(
+                    f"| - Score joueur {sorted_paires[i][1]['Nom']} {sorted_paires[i][1]['Prenom']} ('0'/'0.5'/'1'): ")
+                score_p2 = self.test_input.test_tournament(score_p2)  # verification
 
             sorted_paires[i][0]['Score'] = sorted_paires[i][0]['Score'] + \
                 float(score_p1)
@@ -440,7 +448,7 @@ class MenuViews:
         print("--|    / \\  | |_ __ | |__   __ _| |__   /_/| |_(_) __ _ _   _  ___  |--")
         print("--|   / _ \\ | | '_ \\| '_ \\ / _` | '_ \\ / _ \\ __| |/ _` | | | |/ _ \\ |--")
         print("--|  / ___ \\| | |_) | | | | (_| | |_) |  __/ |_| | (_| | |_| |  __/ |--")
-        print("--| /_/   \\_\\_| .__/|_| |_|\\__,_|_.__/ \\___|\\__|_|\\__, |\\__,_|\\___| |--")
+        print("--| /_/   \\_\\_| .__/|_| |_|\\__,_|_.__/ \\___|\\__|_|\\__,|\\__,_|\\___| |--")
         print("--|           |_|                                    |_|            |--")
         print("-----------------------------------------------------------------------")
         print("------------------| Joueurs par ordre alphabétique |-------------------")

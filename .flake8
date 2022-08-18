@@ -8,4 +8,6 @@ exclude =
     chess_data_base
     p4env
     .p4env
+    p4bis
+    .p4bis
 max-complexity = 100

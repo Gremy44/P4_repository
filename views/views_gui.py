@@ -77,6 +77,7 @@ class ControllerGui(QMainWindow):
         '''
         - pair for other round if double
         '''
+        print("Fais des deque")
         tmp_01 = []
 
         my_paires = []
@@ -651,6 +652,7 @@ class QWRoundEmpty(QMainWindow):
         self.date_hour_end = ""
 
         inc = 0
+        inc_deque = 0
 
         # Load the UI file
         uic.loadUi('./views/qt_ux/round_empty.ui', self)
@@ -674,6 +676,11 @@ class QWRoundEmpty(QMainWindow):
             self.my_players = self.ctr_gui.pairing_other_round()
             while self.ctr_gui.find_matching_match(self.my_players):
                 self.my_players = self.ctr_gui.pairing_other_round_deque()
+                inc_deque += 1
+                if inc_deque is self.rounds:
+                    self.my_players = self.ctr_gui.pairing_other_round()
+                    break
+
         for i in range(self.rounds):
 
             self.tab_match.addTab(QWRound(), f"Match {i+1}")
