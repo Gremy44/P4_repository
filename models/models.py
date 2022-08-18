@@ -171,7 +171,7 @@ class TournamentModel:
             joueur_1_score = players_infos[i][0]['Score']
             joueur_2_id = players_infos[i][1]['id_player']
             joueur_2_score = players_infos[i][1]['Score']
-            joueurs = [[joueur_1_id, joueur_1_score], [joueur_2_id, joueur_2_score]]
+            joueurs = ([joueur_1_id, joueur_1_score], [joueur_2_id, joueur_2_score])
             print(f"Sauvegarde Match {i+1} : ", joueurs)
             lst_tour.append(joueurs)
 
