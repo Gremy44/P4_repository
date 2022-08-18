@@ -1,6 +1,16 @@
+# vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# venv
 /p4env
 .p4env
 
+# cache
 /views/__pycache__
 /models/__pycache__
 /controllers/__pycache__
@@ -8,19 +18,7 @@
 .models/__pycache__
 .controllers/__pycache__
 
-/models/tournament_datas
-/controllers/test.py
-/controllers/test_02.py
-/models/player_data_base
-.models/tournament_datas
-.controllers/test.py
-.controllers/test_02.py
-.models/player_data_base
-
+# qt
 /views/qt_ux/qt_ux_temp
-/.vscode
 /.qt_for_python
-.vscode
-.qt_for_python
-/__pycache__
-.__pycache__
+.qt_for_python/*
